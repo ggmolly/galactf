@@ -1,0 +1,15 @@
+services:
+  galactf-db:
+    image: postgres:17.4-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: galactf
+      POSTGRES_PASSWORD: galactf
+      POSTGRES_DB: galactf
+    ports:
+      - "5432:5432"
+  galactf-redis:
+    image: redis:7.4-alpine
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
