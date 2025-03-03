@@ -1,33 +1,51 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useEffect, useState } from 'react'
+import { apiClient } from './lib/axios';
+import { Challenge } from './interfaces/challenge.interface';
+import { Toaster } from './components/ui/sonner';
+import { toast } from 'sonner';
+import axios from 'axios';
+import ChallengeCard, { ChallengeCardSkeleton } from './components/ChallengeCard';
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [challenges, setChallenges] = useState<Challenge[] | undefined>(undefined)
+
+  const loadChallenges = () => {
+    apiClient.get("/api/v1/challenges").then((res) => {
+      setChallenges(res.data.data);
+    }).catch((err) => {
+      let errorMessage = "Network error. Please check your internet connection.";
+      if (!axios.isAxiosError(err)) {
+        errorMessage = `HTTP ${err.response.status}, failed to load challenges`;
+      }
+      toast.error(errorMessage, {
+        duration: 5000,
+        dismissible: true,
+        action: {
+          label: 'Retry',
+          onClick: () => loadChallenges(),
+        },
+      });
+    })
+  }
+
+  useEffect(() => {
+    loadChallenges()
+  }, []);
 
   return (
     <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+      <div className='flex flex-wrap justify-around gap-4 p-4'>
+        {challenges === undefined ? (
+          Array(22).fill(null).map((_, i) => (
+            <ChallengeCardSkeleton key={i} index={i} />
+          ))
+        ) : (
+          challenges.map((challenge) => (
+            <ChallengeCard key={challenge.id} challenge={challenge} />
+          ))
+        )}
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <Toaster position='top-right' />
     </>
   )
 }
