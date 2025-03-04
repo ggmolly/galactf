@@ -9,7 +9,7 @@ import (
 )
 
 func GetChallenges(c *fiber.Ctx) error {
-	if chals, err := orm.GetChallenges(); err != nil {
+	if chals, err := orm.GetChallengeSolveRate(); err != nil {
 		log.Printf("[-] error fetching challenges: %s", err.Error())
 		return utils.RestStatusFactoryData(c, fiber.StatusInternalServerError, []orm.Challenge{}, "an error occurred while fetching challenges")
 	} else {

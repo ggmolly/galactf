@@ -28,8 +28,41 @@ func seedChallenges() {
 	log.Printf("[+] seeded %d challenges!", len(chals))
 }
 
+func seedUsers() {
+	var userCount int64
+	GormDB.Model(&User{}).Count(&userCount)
+	if userCount > 0 {
+		log.Println("[-] users already seeded")
+		return
+	}
+	log.Println("[#] seeding users")
+	const MAX_USERS = 10
+	users := FakeUsers(MAX_USERS)
+	if err := GormDB.Create(&users).Error; err != nil {
+		log.Fatalf("[-] error seeding users: %s", err.Error())
+	}
+	log.Printf("[+] seeded %d users!", len(users))
+}
+
+func seedAttempts() {
+	var attemptCount int64
+	GormDB.Model(&Attempt{}).Count(&attemptCount)
+	if attemptCount > 0 {
+		log.Println("[-] attempts already seeded")
+		return
+	}
+	log.Println("[#] seeding attempts")
+	attempts := FakeAttempts()
+	if err := GormDB.Create(&attempts).Error; err != nil {
+		log.Fatalf("[-] error seeding attempts: %s", err.Error())
+	}
+	log.Printf("[+] seeded %d attempts!", len(attempts))
+}
+
 func Seed() {
 	seedChallenges()
+	seedUsers()
+	seedAttempts()
 
 	os.Exit(0)
 }
@@ -45,7 +78,7 @@ func customCategory() {
 			categories[i] = validCategories[randIndex]
 		}
 		// hacky fix to assign a []string to a pq.StringArray (reflect will not allow this)
-		return []pq.StringArray{pq.StringArray(categories)}, nil
+		return pq.StringArray(categories), nil
 	})
 }
 

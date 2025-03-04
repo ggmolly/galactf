@@ -1,13 +1,16 @@
 import { useEffect, useState } from 'react'
 import { apiClient } from './lib/axios';
-import { Challenge } from './interfaces/challenge.interface';
+import { ChallengeWithSolveRate } from './interfaces/challenge.interface';
 import { Toaster } from './components/ui/sonner';
 import { toast } from 'sonner';
 import axios from 'axios';
 import ChallengeCard, { ChallengeCardSkeleton } from './components/ChallengeCard';
+import ChallengeModal from './components/ChallengeModal';
 
 function App() {
-  const [challenges, setChallenges] = useState<Challenge[] | undefined>(undefined)
+  const [challenges, setChallenges] = useState<ChallengeWithSolveRate[] | undefined>(undefined)
+  const [selectedChallenge, setSelectedChallenge] = useState<ChallengeWithSolveRate | undefined>(undefined)
+  const [modalVisible, setModalVisible] = useState(false);
 
   const loadChallenges = () => {
     apiClient.get("/api/v1/challenges").then((res) => {
@@ -41,10 +44,26 @@ function App() {
           ))
         ) : (
           challenges.map((challenge) => (
-            <ChallengeCard key={challenge.id} challenge={challenge} />
+            <ChallengeCard
+              key={challenge.id}
+              challenge={challenge}
+              selectChallenge={(challenge) => {
+                setSelectedChallenge(challenge)
+                setModalVisible(true)
+              }}
+            />
           ))
         )}
       </div>
+      {selectedChallenge !== undefined && (
+        <ChallengeModal
+          challenge={selectedChallenge}
+          onClose={() => {
+            setModalVisible(false);
+          }}
+          open={modalVisible}
+        />
+      )}
       <Toaster position='top-right' />
     </>
   )

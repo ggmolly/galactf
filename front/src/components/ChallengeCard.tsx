@@ -1,25 +1,27 @@
-import { Challenge } from "@/interfaces/challenge.interface";
+import { ChallengeWithSolveRate } from "@/interfaces/challenge.interface";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Skeleton } from "./ui/skeleton";
-import { Badge } from "./ui/badge";
-import { categoryColor } from "@/utils/categoryColor";
-import { cn } from "@/lib/utils";
-import { difficultyColor } from "@/utils/difficultyColor";
+import { DifficultyBadge } from "./DifficultyBadge";
+import { CategoryBadge } from "./CategoryBadge";
 
 interface ChallengeCardProps {
-  challenge: Challenge;
+  challenge: ChallengeWithSolveRate;
+  selectChallenge: (challenge: ChallengeWithSolveRate) => void;
 }
 
-export function ChallengeCard({ challenge }: ChallengeCardProps) {
+export function ChallengeCard({ challenge, selectChallenge }: ChallengeCardProps) {
     return (
-        <Card className="w-72">
+        <Card
+            className="w-72 hover:scale-105 transition-all duration-150 hover:shadow-xl cursor-pointer"
+            onClick={() => {
+                selectChallenge(challenge);
+            }}
+        >
             <CardHeader>
                 <CardTitle>
                     <div className="flex gap-x-2 justify-between">
                         <span className="my-auto">{challenge.name}</span>
-                        <Badge className={cn("text-xs", "font-bold", "my-auto", difficultyColor(challenge.difficulty))}>
-                            {challenge.difficulty}/5
-                        </Badge>
+                        <DifficultyBadge difficulty={challenge.difficulty} />
                     </div>
                 </CardTitle>
             </CardHeader>
@@ -29,17 +31,15 @@ export function ChallengeCard({ challenge }: ChallengeCardProps) {
                         500 points
                     </span>
                     <span className="text-xs text-muted-foreground">
-                        {(Math.random() * 100) | 0}% solved
+                        {(challenge.solve_rate * 100) | 0}% solved
                     </span>
                 </div>
 
                 <hr className="my-2" />
 
                 <div className="flex flex-wrap gap-2 mt-2">
-                    {challenge.categories.map((category) => (
-                        <Badge key={category} className={cn("text-xs", categoryColor(category))}>
-                            {category}
-                        </Badge>
+                    {challenge.categories.map((category, i) => (
+                        <CategoryBadge key={i} category={category} />
                     ))}
                 </div>
             </CardContent>

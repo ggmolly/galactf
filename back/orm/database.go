@@ -30,7 +30,7 @@ func InitDatabase() {
 		panic("failed to connect database " + err.Error())
 	}
 
-	err = GormDB.AutoMigrate(&Challenge{})
+	err = GormDB.AutoMigrate(&Challenge{}, &Attempt{}, &User{})
 
 	if err != nil {
 		panic("failed to migrate database " + err.Error())
