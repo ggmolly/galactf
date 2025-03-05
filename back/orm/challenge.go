@@ -17,25 +17,14 @@ type Challenge struct {
 	CreatedAt   time.Time      `json:"-" gorm:"autoCreateTime" faker:"-"`
 }
 
-type ChallengeSolveRate struct {
+type ChallengeStats struct {
 	Challenge
 
 	SolveRate float64 `json:"solve_rate" faker:"-" gorm:"column:solve_rate"`
 }
 
-func GetChallenges() ([]Challenge, error) {
-	var challenges []Challenge
-	if err := GormDB.
-		Order("difficulty ASC").
-		Find(&challenges).
-		Error; err != nil {
-		return nil, err
-	}
-	return challenges, nil
-}
-
-func GetChallengeSolveRate() ([]ChallengeSolveRate, error) {
-	var result []ChallengeSolveRate
+func GetChallengeStats() ([]ChallengeStats, error) {
+	var result []ChallengeStats
 
 	err := GormDB.Table("challenges").
 		Select("challenges.id, challenges.name, challenges.difficulty, challenges.categories, challenges.description, " +
@@ -50,6 +39,21 @@ func GetChallengeSolveRate() ([]ChallengeSolveRate, error) {
 	}
 
 	return result, nil
+}
+
+func GetChallengeStatsById(id int) (*ChallengeStats, error) {
+	var result ChallengeStats
+	err := GormDB.Table("challenges").
+		Select("challenges.id, challenges.name, challenges.difficulty, challenges.categories, challenges.description, "+
+			"COUNT(attempts.id) FILTER(WHERE attempts.success = true) * 1.0 / NULLIF(COUNT(attempts.id), 0) AS solve_rate").
+		Joins("LEFT JOIN attempts ON attempts.challenge_id = challenges.id").
+		Where("challenges.id = ?", id).
+		Group("challenges.id").
+		Scan(&result).Error
+	if err != nil {
+		return nil, err
+	}
+	return &result, nil
 }
 
 func GetFakeChallenges(n uint) []Challenge {

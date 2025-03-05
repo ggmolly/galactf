@@ -13,7 +13,7 @@ function App() {
   const [modalVisible, setModalVisible] = useState(false);
 
   const loadChallenges = () => {
-    apiClient.get("/api/v1/challenges").then((res) => {
+    apiClient.get("/challenges").then((res) => {
       setChallenges(res.data.data);
     }).catch((err) => {
       const errorMessage = axiosErrorFactory(err);

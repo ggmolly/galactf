@@ -34,7 +34,15 @@ func main() {
 
 	apiGroup := app.Group("/api/v1")
 	{
-		apiGroup.Get("/challenges", routes.GetChallenges)
+		challengesGroup := apiGroup.Group("/challenges")
+		{
+			challengesGroup.Get("/", routes.GetChallenges)
+		}
+		challengeGroup := apiGroup.Group("/challenge/:id")
+		{
+			challengeGroup.Get("/", routes.GetChallenge)
+			challengeGroup.Get("/solvers", routes.GetSolvers)
+		}
 	}
 
 	app.Listen(":7777")

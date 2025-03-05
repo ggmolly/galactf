@@ -10,10 +10,10 @@ import (
 type User struct {
 	ID        uint64    `json:"id" gorm:"primaryKey" faker:"-"`
 	Name      string    `json:"name" gorm:"type:varchar(255);unique" faker:"name"`
-	Email     string    `json:"email" gorm:"type:varchar(255);unique" faker:"email"`
-	CreatedAt time.Time `json:"created_at" gorm:"type:timestamp" faker:"-"`
+	Email     string    `json:"-" gorm:"type:varchar(255);unique,omitempty" faker:"email"`
+	CreatedAt time.Time `json:"-" gorm:"type:timestamp" faker:"-"`
 
-	Attempts []Attempt `json:"attempts" gorm:"foreignKey:UserID" faker:"-"`
+	Attempts []Attempt `json:"-" gorm:"foreignKey:UserID" faker:"-"`
 }
 
 func FakeUsers(n uint) []User {

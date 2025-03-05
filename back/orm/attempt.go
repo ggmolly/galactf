@@ -6,11 +6,23 @@ type Attempt struct {
 	ID          uint64 `json:"id" gorm:"primaryKey" faker:"-"`
 	UserID      uint64 `json:"user_id" gorm:"type:bigint"`
 	ChallengeID uint64 `json:"challenge_id" gorm:"type:bigint"`
-	Success     bool   `json:"success" faker:"-" gorm:"index"`
-	Input       string `json:"input" faker:"word,lang=eng,len=16"`
+	Success     bool   `json:"-" faker:"-" gorm:"index"`
+	Input       string `json:"-" faker:"word,lang=eng,len=16"`
 
 	User      User      `json:"user" gorm:"foreignKey:UserID" faker:"-"`
-	Challenge Challenge `json:"challenge" gorm:"foreignKey:ChallengeID" faker:"-"`
+	Challenge Challenge `json:"-" gorm:"foreignKey:ChallengeID" faker:"-"`
+}
+
+func GetSolvedAttempts(challengeId int) ([]Attempt, error) {
+	var attempts []Attempt
+	err := GormDB.
+		Preload("User").
+		Where("challenge_id = ? AND success = true", challengeId).
+		Find(&attempts).Error
+	if err != nil {
+		return nil, err
+	}
+	return attempts, nil
 }
 
 func FakeAttempts() []Attempt {

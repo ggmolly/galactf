@@ -9,10 +9,35 @@ import (
 )
 
 func GetChallenges(c *fiber.Ctx) error {
-	if chals, err := orm.GetChallengeSolveRate(); err != nil {
+	chals, err := orm.GetChallengeStats()
+	status := fiber.StatusOK
+	if err != nil {
 		log.Printf("[-] error fetching challenges: %s", err.Error())
-		return utils.RestStatusFactoryData(c, fiber.StatusInternalServerError, []orm.Challenge{}, "an error occurred while fetching challenges")
-	} else {
-		return utils.RestStatusFactoryData(c, fiber.StatusOK, chals, "")
+		status = fiber.StatusInternalServerError
 	}
+	return utils.RestStatusFactoryData(c, status, chals, "")
+}
+
+func GetChallenge(c *fiber.Ctx) error {
+	id, err := c.ParamsInt("id")
+	if err != nil {
+		return utils.RestStatusFactory(c, fiber.StatusBadRequest, "invalid id")
+	}
+	chal, err := orm.GetChallengeStatsById(id)
+	if err != nil {
+		return utils.RestStatusFactory(c, fiber.StatusInternalServerError, "error fetching challenge")
+	}
+	return utils.RestStatusFactoryData(c, fiber.StatusOK, chal, "")
+}
+
+func GetSolvers(c *fiber.Ctx) error {
+	id, err := c.ParamsInt("id")
+	if err != nil {
+		return utils.RestStatusFactory(c, fiber.StatusBadRequest, "invalid id")
+	}
+	attempts, err := orm.GetSolvedAttempts(id)
+	if err != nil {
+		return utils.RestStatusFactory(c, fiber.StatusInternalServerError, "error fetching challenge")
+	}
+	return utils.RestStatusFactoryData(c, fiber.StatusOK, attempts, "")
 }
