@@ -3,9 +3,9 @@ import { apiClient } from './lib/axios';
 import { ChallengeWithSolveRate } from './interfaces/challenge.interface';
 import { Toaster } from './components/ui/sonner';
 import { toast } from 'sonner';
-import axios from 'axios';
 import ChallengeCard, { ChallengeCardSkeleton } from './components/ChallengeCard';
 import ChallengeModal from './components/ChallengeModal';
+import { axiosErrorFactory } from './utils/errorFactory';
 
 function App() {
   const [challenges, setChallenges] = useState<ChallengeWithSolveRate[] | undefined>(undefined)
@@ -16,10 +16,7 @@ function App() {
     apiClient.get("/api/v1/challenges").then((res) => {
       setChallenges(res.data.data);
     }).catch((err) => {
-      let errorMessage = "Network error. Please check your internet connection.";
-      if (!axios.isAxiosError(err)) {
-        errorMessage = `HTTP ${err.response.status}, failed to load challenges`;
-      }
+      const errorMessage = axiosErrorFactory(err);
       toast.error(errorMessage, {
         duration: 5000,
         dismissible: true,
@@ -64,7 +61,7 @@ function App() {
           open={modalVisible}
         />
       )}
-      <Toaster position='top-right' />
+      <Toaster position='top-right' richColors className="pointer-events-auto" />
     </>
   )
 }
