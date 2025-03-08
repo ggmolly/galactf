@@ -1,16 +1,22 @@
 import { Challenge } from "@/interfaces/challenge.interface";
 import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-  } from "@/components/ui/dialog"
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { DifficultyBadge } from "./DifficultyBadge";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
-import { FlagIcon, SparkleIcon } from "lucide-react";
+import {
+  ExternalLinkIcon,
+  FileIcon,
+  FlagIcon,
+  LinkIcon,
+  SparkleIcon,
+} from "lucide-react";
 import { CategoryBadge } from "./CategoryBadge";
 import { useEffect, useState } from "react";
 import { Skeleton } from "./ui/skeleton";
@@ -18,116 +24,171 @@ import { toast } from "sonner";
 import { axiosErrorFactory } from "@/utils/errorFactory";
 import { apiClient } from "@/lib/axios";
 import { Attempt } from "@/interfaces/attempt.interface";
+import { formatBytes } from "@/utils/formatBytes";
 
-  
+const flagRegex = /^GALA{[A-Za-z0-9_-]{24,48}}$/;
 export interface ChallengeModalProps {
-    challenge: Challenge;
-    onClose: () => void;
-    open: boolean;
+  challenge: Challenge;
+  onClose: () => void;
+  open: boolean;
 }
 
-export default function ChallengeModal({ challenge, open, onClose }: ChallengeModalProps) {
-    const [solvers, setSolvers] = useState<Attempt[] | undefined>(undefined);
-    
-    const fetchChallengeSolvers = (id: number) => {
-        apiClient.get(`/challenge/${id}/solvers`)
-            .then((res) => {
-                setSolvers(res.data.data);
-            })
-            .catch((err) => {
-                const errMessage = axiosErrorFactory(err);
-                toast.error(errMessage, {
-                    duration: 5000,
-                    dismissible: true,
-                    action: {
-                        label: 'Retry',
-                        onClick: () => fetchChallengeSolvers(id),
-                    },
-                });
-            })
-    }
+export default function ChallengeModal({
+  challenge,
+  open,
+  onClose,
+}: ChallengeModalProps) {
+  const [solvers, setSolvers] = useState<Attempt[] | undefined>(undefined);
+  const [flag, setFlag] = useState<string>("");
+  const [submitting, setSubmitting] = useState<boolean>(false);
 
-    useEffect(() => {
-        fetchChallengeSolvers(challenge.id);
-    }, [challenge]);
+  const fetchChallengeSolvers = (id: number) => {
+    apiClient
+      .get(`/challenge/${id}/solvers`)
+      .then((res) => {
+        setSolvers(res.data.data);
+      })
+      .catch((err) => {
+        const errMessage = axiosErrorFactory(err);
+        toast.error(errMessage, {
+          duration: 5000,
+          dismissible: true,
+          action: {
+            label: "Retry",
+            onClick: () => fetchChallengeSolvers(id),
+          },
+        });
+      });
+  };
 
-    return (
-        <Dialog
-            open={open}
-            onOpenChange={onClose}
-        >
-            <DialogContent>
-                <DialogHeader>
-                    <DialogTitle className="flex gap-x-2 items-center">
-                        <span>{challenge?.name}</span>
-                        <DifficultyBadge difficulty={challenge?.difficulty ?? 0} />
-                    </DialogTitle>
-                </DialogHeader>
-                <DialogDescription>
-                    {challenge?.description ?? "No description available"}
-                </DialogDescription>
+  const submitFlag = () => {
+    setSubmitting(true);
+    apiClient
+      .post(`/challenge/${challenge.id}/submit`, { flag })
+      .then((response) => {
+        switch (response.status) {
+          case 200:
+            toast.success(response.data.message);
+            onClose();
+            break;
+          case 201:
+            toast.error(response.data.message);
+            break;
+        }
+      })
+      .catch((err) => {
+        const errMessage = axiosErrorFactory(err);
+        toast.error(errMessage, {
+          duration: 5000,
+          dismissible: true,
+        });
+      })
+      .finally(() => {
+        setSubmitting(false);
+      });
+  };
 
-                <div className="flex flex-wrap gap-2 items-center">
-                    <span className="text-sm">Categories ({challenge?.categories.length ?? 0}):</span>
-                    {challenge?.categories.map((category, i) => (
-                        <CategoryBadge key={i} category={category} />
-                    ))}
-                </div>
+  useEffect(() => {
+    fetchChallengeSolvers(challenge.id);
+  }, [challenge]);
 
-                <div className="flex flex-wrap items-center mt-1">
-                    <SparkleIcon className="mr-2 h-4 w-4" />
-                    {solvers === undefined ? (
-                        <SolversSkeleton />
+  return (
+    <Dialog open={open} onOpenChange={onClose}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle className="flex gap-x-2 items-center">
+            <span>{challenge?.name}</span>
+            <DifficultyBadge difficulty={challenge?.difficulty ?? 0} />
+          </DialogTitle>
+        </DialogHeader>
+        <DialogDescription>
+          {challenge?.description ?? "No description available"}
+        </DialogDescription>
+
+        <span className="text-sm">
+          Categories ({challenge?.categories.length ?? 0}):
+        </span>
+        <div className="flex flex-wrap gap-2 items-center">
+          {challenge?.categories.map((category, i) => (
+            <CategoryBadge key={i} category={category} />
+          ))}
+        </div>
+
+        <div className="flex flex-wrap items-center mt-1">
+          <SparkleIcon className="mr-2 h-4 w-4" />
+          {solvers === undefined ? (
+            <SolversSkeleton />
+          ) : (
+            <>
+              <span className="text-sm">Solvers ({solvers?.length ?? 0}):</span>
+              <br />
+              <p className="text-sm">
+                {solvers.map((solver) => solver.user.name).join(", ")}
+              </p>
+            </>
+          )}
+        </div>
+        {challenge?.attachments.length > 0 && (
+          <>
+            <hr />
+            <span className="text-sm">
+              Attachments ({challenge?.attachments.length}):
+            </span>
+            <div className="flex flex-col">
+              {challenge?.attachments.map((attachment, i) => (
+                <div key={i} className="flex gap-x-2 items-center">
+                  <a
+                    className="flex gap-x-2 text-sm items-center"
+                    href={import.meta.env.VITE_API_URL + attachment.url}
+                    target="_blank"
+                  >
+                    {attachment.type === "url" ? (
+                      <LinkIcon className="h-4 w-4" />
                     ) : (
-                        <>
-                            <span className="text-sm">Solvers ({solvers?.length ?? 0}):</span>
-                            {solvers?.length > 0 ? (
-                                solvers.map((solver, i) => (
-                                    <>
-                                        {i === 0 ? (
-                                            <span className="text-sm ml-2 text-destructive-foreground font-bold">
-                                                {solver.user.name}
-                                            </span>
-                                        ) : (
-                                            <span className="text-sm ml-2">
-                                                {solver.user.name}
-                                            </span>
-                                        )}
-                                        {i !== solvers.length - 1 ? "," : ""}
-                                    </>
-                                ))
-                            ) : (
-                                <span className="text-sm ml-2 text-muted-foreground">No solvers</span>
-                            )}
-                        </>
+                      <FileIcon className="h-4 w-4" />
                     )}
+                    {attachment.filename + " "}
+                    {attachment.type === "file" &&
+                      attachment.size > 0 &&
+                      "(" + formatBytes(attachment.size) + ")"}
+                    <ExternalLinkIcon className="h-4 w-4 mb-2" />
+                  </a>
                 </div>
-
-                <hr />
-                <DialogFooter>
-                    <Input
-                        minLength={0}
-                        maxLength={255}
-                        placeholder="GALA{...}"
-                        className="w-full"
-                    />
-                    <Button variant="outline">
-                        <FlagIcon className="mr-2 h-4 w-4" />
-                        Submit
-                    </Button>
-                </DialogFooter>
-            </DialogContent>
-        </Dialog>
-    );
+              ))}
+            </div>
+          </>
+        )}
+        <hr />
+        <DialogFooter>
+          <Input
+            minLength={0}
+            maxLength={255}
+            placeholder="GALA{...}"
+            className="w-full"
+            value={flag}
+            onChange={(e) => setFlag(e.target.value)}
+          />
+          <Button
+            variant="outline"
+            onClick={submitFlag}
+            disabled={!flag.match(flagRegex) || submitting}
+          >
+            <FlagIcon className="mr-2 h-4 w-4" />
+            {submitting ? "Submitting..." : "Submit"}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
 }
 
 function SolversSkeleton() {
-    return (
-        <div className="flex flex-wrap gap-2 items-center mt-1">
-            <span className="text-sm">Solvers</span>
-            <Skeleton className="w-6 h-6" />
-            <span className="text-sm">: </span>
-            <Skeleton className="w-36 h-6" />
-        </div>
-    );
+  return (
+    <div className="flex flex-wrap gap-2 items-center mt-1">
+      <span className="text-sm">Solvers</span>
+      <Skeleton className="w-6 h-6" />
+      <span className="text-sm">: </span>
+      <Skeleton className="w-36 h-6" />
+    </div>
+  );
 }

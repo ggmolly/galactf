@@ -12,20 +12,27 @@ import (
 
 // Idempotent seeding
 
-func seedChallenges() {
-	var challengeCount int64
-	GormDB.Model(&Challenge{}).Count(&challengeCount)
-	if challengeCount > 0 {
-		log.Println("[-] challenges already seeded")
-		return
+func seedRealChallenges() {
+	challenges := []Challenge{
+		{
+			Name:        "elite encryption",
+			Difficulty:  0,
+			Categories:  []string{"crypto"},
+			Description: "After years of research, we've developed an unbreakable encryption algorithm. Only the most skilled cryptographers will be able to decode this.",
+			Attachments: []Attachment{
+				{
+					Type:  "url",
+					Title: "top_secret_data.txt",
+					Size:  0,
+					URL:   "/factories/elite_encryption",
+				},
+			},
+		},
 	}
-	log.Println("[#] seeding challenges")
-	const MAX_CHALLENGES = 22
-	chals := GetFakeChallenges(MAX_CHALLENGES)
-	if err := GormDB.Create(&chals).Error; err != nil {
+
+	if err := GormDB.Create(&challenges).Error; err != nil {
 		log.Fatalf("[-] error seeding challenges: %s", err.Error())
 	}
-	log.Printf("[+] seeded %d challenges!", len(chals))
 }
 
 func seedUsers() {
@@ -60,7 +67,7 @@ func seedAttempts() {
 }
 
 func Seed() {
-	seedChallenges()
+	seedRealChallenges()
 	seedUsers()
 	seedAttempts()
 

@@ -150,3 +150,21 @@
 * {
   font-family: 'Ubuntu Mono', monospace;
 }
+
+a {
+  @apply text-blue-400 underline;
+}
+
+a:hover {
+  @apply text-blue-500;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+a:active {
+  @apply text-blue-600;
+}
+
+a:visited {
+  @apply text-purple-400;
+}

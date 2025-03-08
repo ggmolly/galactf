@@ -1,6 +1,12 @@
 package orm
 
-import "math/rand"
+import (
+	"math/rand/v2"
+	"strings"
+)
+
+const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-"
+const flagLength = 32
 
 type Attempt struct {
 	ID          uint64 `json:"id" gorm:"primaryKey" faker:"-"`
@@ -25,6 +31,30 @@ func GetSolvedAttempts(challengeId int) ([]Attempt, error) {
 	return attempts, nil
 }
 
+func asciiSum(s string) uint64 {
+	var sum uint64
+	for _, c := range s {
+		sum += uint64(c)
+	}
+	return sum
+}
+
+func GenerateFlag(user *User, challengeName string) string {
+	var flag strings.Builder
+	rndSrc := rand.NewPCG(user.RandomSeed, asciiSum(challengeName))
+	flag.WriteString("GALA{")
+	flag.Grow(flagLength)
+	for i := 0; i < flagLength; i++ {
+		flag.WriteByte(charset[rndSrc.Uint64()%uint64(len(charset))])
+	}
+	flag.WriteRune('}')
+	return flag.String()
+}
+
+func VerifyFlag(user *User, challengeName, flag string) bool {
+	return flag == GenerateFlag(user, challengeName)
+}
+
 func FakeAttempts() []Attempt {
 	var users []User
 	if err := GormDB.Find(&users).Error; err != nil {
@@ -38,13 +68,13 @@ func FakeAttempts() []Attempt {
 
 	var attempts []Attempt
 	for _, user := range users {
-		maxChallenges := rand.Intn(3) + 1
+		maxChallenges := rand.IntN(3) + 1
 		for i := 0; i < maxChallenges; i++ {
 			var success bool
 			if i == maxChallenges-1 {
 				success = true
 			}
-			challenge := challenges[rand.Intn(len(challenges))]
+			challenge := challenges[rand.IntN(len(challenges))]
 			attempts = append(attempts, Attempt{
 				UserID:      user.ID,
 				ChallengeID: challenge.ID,

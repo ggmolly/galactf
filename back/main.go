@@ -5,6 +5,8 @@ import (
 	"os"
 
 	"github.com/bytedance/sonic"
+	"github.com/ggmolly/galactf/factories"
+	"github.com/ggmolly/galactf/middlewares"
 	"github.com/ggmolly/galactf/orm"
 	"github.com/ggmolly/galactf/routes"
 	"github.com/gofiber/fiber/v2"
@@ -34,14 +36,19 @@ func main() {
 
 	apiGroup := app.Group("/api/v1")
 	{
-		challengesGroup := apiGroup.Group("/challenges")
+		challengesGroup := apiGroup.Group("/challenges", middlewares.DummyAuthMiddleware)
 		{
 			challengesGroup.Get("/", routes.GetChallenges)
 		}
-		challengeGroup := apiGroup.Group("/challenge/:id")
+		challengeGroup := apiGroup.Group("/challenge/:id", middlewares.DummyAuthMiddleware)
 		{
 			challengeGroup.Get("/", routes.GetChallenge)
 			challengeGroup.Get("/solvers", routes.GetSolvers)
+			challengeGroup.Post("/submit", routes.SubmitFlag)
+		}
+		factoriesGroup := apiGroup.Group("/factories", middlewares.DummyAuthMiddleware)
+		{
+			factoriesGroup.Get("/elite_encryption", factories.GenerateEliteEncryption)
 		}
 	}
 
