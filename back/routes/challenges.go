@@ -2,6 +2,7 @@ package routes
 
 import (
 	"log"
+	"time"
 
 	"github.com/ggmolly/galactf/dto"
 	"github.com/ggmolly/galactf/middlewares"
@@ -66,6 +67,12 @@ func SubmitFlag(c *fiber.Ctx) error {
 	if err != nil {
 		return err
 	}
+
+	// Check if the challenge is locked
+	if chal.RevealAt.Before(time.Now().UTC()) {
+		return utils.RestStatusFactory(c, fiber.StatusForbidden, "This challenge is locked")
+	}
+
 	isValid := orm.VerifyFlag(user, chal.Name, dto.Flag)
 	attempt := &orm.Attempt{
 		UserID:      user.ID,
