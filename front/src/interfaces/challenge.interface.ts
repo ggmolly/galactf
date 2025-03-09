@@ -7,6 +7,8 @@ export interface Challenge {
   difficulty: number;
   categories: string[];
   attachments: Attachment[];
+  solved?: boolean;
+  solvers?: number;
 }
 
 export interface ChallengeWithSolveRate extends Challenge {

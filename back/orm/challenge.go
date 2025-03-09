@@ -21,21 +21,24 @@ type Challenge struct {
 	CreatedAt   time.Time      `json:"-" gorm:"autoCreateTime" faker:"-"`
 
 	Attachments []Attachment `json:"attachments" gorm:"foreignKey:ChallengeID"`
-	Attempts    []Attempt    `json:"attempts" gorm:"foreignKey:ChallengeID"`
+	Attempts    []Attempt    `json:"-" gorm:"foreignKey:ChallengeID"`
 }
 
 type ChallengeStats struct {
 	Challenge
 
 	SolveRate float64 `json:"solve_rate" faker:"-" gorm:"-"`
+	Solved    bool    `json:"solved" faker:"-" gorm:"-"`
+	Solvers   uint64  `json:"solvers" faker:"-" gorm:"-"`
 }
 
-func GetChallengeStats() ([]ChallengeStats, error) {
+func GetChallengeStats(userID uint64) ([]ChallengeStats, error) {
 	var challenges []ChallengeStats
 
 	// Load challenges along with their attachments
 	err := GormDB.
 		Table("challenges").
+		Preload("Attempts").
 		Preload("Attachments").
 		Find(&challenges).
 		Error
@@ -43,45 +46,72 @@ func GetChallengeStats() ([]ChallengeStats, error) {
 		return nil, err
 	}
 
-	// Compute solve rate for each challenge
 	for i := range challenges {
-		var totalAttempts, successfulAttempts int64
+		challenge := &challenges[i]
 
-		err := GormDB.Table("attempts").
-			Where("challenge_id = ?", challenges[i].ID).
-			Count(&totalAttempts).Error
-		if err != nil {
-			return nil, err
+		totalAttempts := len(challenge.Attempts)
+		solvedAttempts := 0
+		for _, attempt := range challenge.Attempts {
+			if attempt.Success {
+				solvedAttempts++
+			}
 		}
-
-		err = GormDB.Table("attempts").
-			Where("challenge_id = ? AND success = true", challenges[i].ID).
-			Count(&successfulAttempts).Error
-		if err != nil {
-			return nil, err
-		}
-
+		challenge.Solvers = uint64(len(challenge.Attempts))
 		if totalAttempts > 0 {
-			challenges[i].SolveRate = float64(successfulAttempts) / float64(totalAttempts)
+			challenge.SolveRate = float64(solvedAttempts) / float64(totalAttempts)
+		} else {
+			challenge.SolveRate = 0
+		}
+
+		challenge.Solved = false
+		for _, attempt := range challenge.Attempts {
+			if attempt.UserID == userID && attempt.Success {
+				challenge.Solved = true
+				break
+			}
 		}
 	}
 
 	return challenges, nil
 }
 
-func GetChallengeStatsById(id int) (*ChallengeStats, error) {
-	var result ChallengeStats
-	err := GormDB.Table("challenges").
-		Select("challenges.id, challenges.name, challenges.difficulty, challenges.categories, challenges.description, "+
-			"COUNT(attempts.id) FILTER(WHERE attempts.success = true) * 1.0 / NULLIF(COUNT(attempts.id), 0) AS solve_rate").
-		Joins("LEFT JOIN attempts ON attempts.challenge_id = challenges.id").
+func GetChallengeStatsById(id int, userID uint64) (*ChallengeStats, error) {
+	var challenge ChallengeStats
+
+	err := GormDB.
+		Table("challenges").
+		Preload("Attempts").
+		Preload("Attachments").
 		Where("challenges.id = ?", id).
-		Group("challenges.id").
-		Scan(&result).Error
+		First(&challenge).
+		Error
 	if err != nil {
 		return nil, err
 	}
-	return &result, nil
+
+	totalAttempts := len(challenge.Attempts)
+	solvedAttempts := 0
+	for _, attempt := range challenge.Attempts {
+		if attempt.Success {
+			solvedAttempts++
+		}
+	}
+
+	if totalAttempts > 0 {
+		challenge.SolveRate = float64(solvedAttempts) / float64(totalAttempts)
+	} else {
+		challenge.SolveRate = 0
+	}
+	challenge.Solved = false
+	challenge.Solvers = uint64(len(challenge.Attempts))
+	for _, attempt := range challenge.Attempts {
+		if attempt.UserID == userID && attempt.Success {
+			challenge.Solved = true
+			break
+		}
+	}
+
+	return &challenge, nil
 }
 
 func GetChallengeById(id int) (*Challenge, error) {
