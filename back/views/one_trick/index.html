@@ -63,7 +63,7 @@
       </p>
       <hr class="my-4" />
       <form
-        class="input-group mb-3 w-50 mx-auto"
+        class="w-50 mx-auto"
         action="/api/v1/factories/one_trick/encrypt"
         method="POST"
       >
@@ -76,15 +76,14 @@
           type="text"
           name="text"
           rows="3"
-          class="form-control"
+          class="form-control w-100"
           placeholder="Enter your text here (max 256 characters)"
           aria-label="Text to encrypt"
-          aria-describedby="basic-addon2"
           maxlength="256"
           required
         ></textarea>
-        <div class="input-group-append">
-          <button class="btn btn-outline-success">Encrypt</button>
+        <div class="input-group-append mt-3">
+          <button class="btn btn-outline-success w-100">Encrypt</button>
         </div>
       </form>
     </div>
