@@ -41,7 +41,7 @@ export default function ChallengeModal({
   onClose,
 }: ChallengeModalProps) {
   const [solvers, setSolvers] = useState<Attempt[] | undefined>(undefined);
-  const [flag, setFlag] = useState<string>("");
+  const [flag, setFlag] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState<boolean>(false);
 
   const { user } = useAuth();
@@ -66,6 +66,9 @@ export default function ChallengeModal({
   };
 
   const submitFlag = () => {
+    if (flag === null) {
+      return;
+    }
     setSubmitting(true);
     apiClient
       .post(`/challenge/${challenge.id}/submit`, { flag })
@@ -186,21 +189,25 @@ export default function ChallengeModal({
               challenge.solved ? "You've solved this challenge!" : "GALA{...}"
             }
             className="w-full"
-            value={flag}
+            value={flag ?? ""}
             onChange={(e) => setFlag(e.target.value)}
-            disabled={submitting}
+            disabled={submitting || challenge.solved}
           />
           <Button
             variant="outline"
             onClick={submitFlag}
-            disabled={!flag.match(flagRegex) || submitting}
+            disabled={
+              (flag !== null && !flag.match(flagRegex)) ||
+              submitting ||
+              challenge.solved
+            }
           >
             <FlagIcon className="mr-2 h-4 w-4" />
             {challenge.solved
               ? "Solved"
               : submitting
-              ? "Submitting..."
-              : "Submit"}
+                ? "Submitting..."
+                : "Submit"}
           </Button>
         </DialogFooter>
       </DialogContent>
