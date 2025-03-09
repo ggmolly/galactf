@@ -84,6 +84,7 @@ func main() {
 		factoriesGroup := apiGroup.Group("/factories", middlewares.DummyAuthMiddleware)
 		{
 			factoriesGroup.Get("/elite_encryption", middlewares.ChallengeUnlockedMiddleware("elite encryption"), factories.GenerateEliteEncryption)
+			factoriesGroup.Get("/super_elite_encryption", middlewares.ChallengeUnlockedMiddleware("super elite encryption"), factories.GenerateSuperEliteEncryption)
 
 			// "One trick" challenge
 			oneTrickGroup := factoriesGroup.Group("/one_trick")
