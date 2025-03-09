@@ -19,6 +19,7 @@ type Challenge struct {
 	Difficulty  uint8          `json:"difficulty" gorm:"type:smallint;index" faker:"number,boundary_start=0,boundary_end=6"`
 	Categories  pq.StringArray `json:"categories" gorm:"type:varchar(24)[]" faker:"ctfCategory"`
 	CreatedAt   time.Time      `json:"-" gorm:"autoCreateTime" faker:"-"`
+	RevealAt    time.Time      `json:"-" faker:"-"`
 
 	Attachments []Attachment `json:"attachments" gorm:"foreignKey:ChallengeID"`
 	Attempts    []Attempt    `json:"-" gorm:"foreignKey:ChallengeID"`
@@ -30,6 +31,7 @@ type ChallengeStats struct {
 	SolveRate float64 `json:"solve_rate" faker:"-" gorm:"-"`
 	Solved    bool    `json:"solved" faker:"-" gorm:"-"`
 	Solvers   uint64  `json:"solvers" faker:"-" gorm:"-"`
+	RevealIn  uint64  `json:"reveal_in,omitempty" faker:"-" gorm:"-"` // relative time until reveal
 }
 
 func GetChallengeStats(userID uint64) ([]ChallengeStats, error) {
@@ -46,6 +48,7 @@ func GetChallengeStats(userID uint64) ([]ChallengeStats, error) {
 		return nil, err
 	}
 
+	now := time.Now().UTC()
 	for i := range challenges {
 		challenge := &challenges[i]
 
@@ -69,6 +72,18 @@ func GetChallengeStats(userID uint64) ([]ChallengeStats, error) {
 				challenge.Solved = true
 				break
 			}
+		}
+
+		// Only serialize the reveal time if it's in the future
+		if now.Before(challenge.RevealAt) {
+			challenge.RevealIn = uint64(challenge.RevealAt.Sub(now).Seconds())
+			// Censor other informations
+			challenge.Name = ""
+			challenge.Description = ""
+			challenge.Difficulty = 0
+			challenge.Categories = []string{}
+			challenge.Attachments = []Attachment{}
+			challenge.Attempts = []Attempt{}
 		}
 	}
 

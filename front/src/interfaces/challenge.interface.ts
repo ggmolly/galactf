@@ -9,6 +9,7 @@ export interface Challenge {
   attachments: Attachment[];
   solved?: boolean;
   solvers?: number;
+  reveal_in?: number;
 }
 
 export interface ChallengeWithSolveRate extends Challenge {
