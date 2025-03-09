@@ -5,9 +5,14 @@ import (
 	"math/rand/v2"
 	"os"
 	"reflect"
+	"time"
 
 	"github.com/go-faker/faker/v4"
 	"github.com/lib/pq"
+)
+
+var (
+	eventStart = time.Date(2025, time.April, 1, 0, 0, 0, 0, time.UTC)
 )
 
 // Idempotent seeding
@@ -28,10 +33,26 @@ func seedRealChallenges() {
 				},
 			},
 		},
+		{
+			Name:        "one trick",
+			Difficulty:  1,
+			Categories:  []string{"crypto", "reverse"},
+			Description: "Some say good security needs multiple layers. Others believe in minimalism. Here, we went all in on minimalism.",
+			Attachments: []Attachment{
+				{
+					Type:  "url",
+					Title: "uber-secure encrypted file reader",
+					Size:  0,
+					URL:   "/factories/one_trick",
+				},
+			},
+		},
 	}
 
-	if err := GormDB.Create(&challenges).Error; err != nil {
-		log.Fatalf("[-] error seeding challenges: %s", err.Error())
+	// Create manually every challenges to skip already existing ones
+	for i, challenge := range challenges {
+		challenge.RevealAt = eventStart.Add(time.Duration(24*i) * time.Hour)
+		GormDB.Create(&challenge)
 	}
 }
 
