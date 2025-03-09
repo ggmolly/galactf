@@ -114,14 +114,12 @@ export default function ChallengeModal({
           <p>First blood:</p>
           {solvers === undefined ? (
             <Skeleton className="w-16 h-6" />
+          ) : solvers.length > 0 ? (
+            <span className={cn("font-bold", user.id === solvers[0].user.id)}>
+              {solvers[0].user.name}
+            </span>
           ) : (
-            solvers.length > 0 ? (
-              <span className={cn("font-bold", user.id === solvers[0].user.id)}>
-                {solvers[0].user.name}
-              </span>
-            ) : (
-              <span className="font-bold">Nobody</span>
-            )
+            <span className="font-bold">Nobody</span>
           )}
         </div>
 
@@ -190,7 +188,7 @@ export default function ChallengeModal({
             className="w-full"
             value={flag}
             onChange={(e) => setFlag(e.target.value)}
-            disabled={!flag.match(flagRegex) || submitting}
+            disabled={submitting}
           />
           <Button
             variant="outline"
