@@ -163,10 +163,13 @@ export default function ChallengeModal({
           <Input
             minLength={0}
             maxLength={255}
-            placeholder="GALA{...}"
+            placeholder={
+              challenge.solved ? "You've solved this challenge!" : "GALA{...}"
+            }
             className="w-full"
             value={flag}
             onChange={(e) => setFlag(e.target.value)}
+            disabled={!flag.match(flagRegex) || submitting}
           />
           <Button
             variant="outline"
@@ -174,7 +177,11 @@ export default function ChallengeModal({
             disabled={!flag.match(flagRegex) || submitting}
           >
             <FlagIcon className="mr-2 h-4 w-4" />
-            {submitting ? "Submitting..." : "Submit"}
+            {challenge.solved
+              ? "Solved"
+              : submitting
+              ? "Submitting..."
+              : "Submit"}
           </Button>
         </DialogFooter>
       </DialogContent>
