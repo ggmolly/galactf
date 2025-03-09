@@ -31,7 +31,7 @@ func GetSolvedAttempts(challengeId int) ([]Attempt, error) {
 	return attempts, nil
 }
 
-func asciiSum(s string) uint64 {
+func AsciiSum(s string) uint64 {
 	var sum uint64
 	for _, c := range s {
 		sum += uint64(c)
@@ -41,7 +41,7 @@ func asciiSum(s string) uint64 {
 
 func GenerateFlag(user *User, challengeName string) string {
 	var flag strings.Builder
-	rndSrc := rand.NewPCG(user.RandomSeed, asciiSum(challengeName))
+	rndSrc := rand.NewPCG(user.RandomSeed, AsciiSum(challengeName))
 	flag.WriteString("GALA{")
 	flag.Grow(flagLength)
 	for i := 0; i < flagLength; i++ {
