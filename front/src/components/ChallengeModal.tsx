@@ -115,9 +115,13 @@ export default function ChallengeModal({
           {solvers === undefined ? (
             <Skeleton className="w-16 h-6" />
           ) : (
-            <span className={cn("font-bold", user.id === solvers[0].user.id)}>
-              {solvers[0].user.name}
-            </span>
+            solvers.length > 0 ? (
+              <span className={cn("font-bold", user.id === solvers[0].user.id)}>
+                {solvers[0].user.name}
+              </span>
+            ) : (
+              <span className="font-bold">Nobody</span>
+            )
           )}
         </div>
 
@@ -137,6 +141,10 @@ export default function ChallengeModal({
                     {solver.user.name + (i === solvers.length - 1 ? "" : ", ")}
                   </span>
                 ))}
+
+                {solvers.length === 0 && (
+                  <span className="font-bold">Nobody</span>
+                )}
               </div>
             </div>
           )}
