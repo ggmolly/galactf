@@ -55,6 +55,14 @@ func VerifyFlag(user *User, challengeName, flag string) bool {
 	return flag == GenerateFlag(user, challengeName)
 }
 
+func HasSolved(challengeId int, userId uint64) bool {
+	var attempt *Attempt
+	err := GormDB.
+		Where("challenge_id = ? AND user_id = ? AND success = true", challengeId, userId).
+		First(&attempt).Error
+	return err == nil && attempt != nil
+}
+
 func FakeAttempts() []Attempt {
 	var users []User
 	if err := GormDB.Find(&users).Error; err != nil {
