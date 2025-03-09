@@ -68,8 +68,8 @@ func SubmitFlag(c *fiber.Ctx) error {
 		return err
 	}
 
-	// Check if the challenge is locked
-	if chal.RevealAt.Before(time.Now().UTC()) {
+	// Check if the challenge is locked'
+	if chal.RevealAt.After(time.Now().UTC()) {
 		return utils.RestStatusFactory(c, fiber.StatusForbidden, "This challenge is locked")
 	}
 

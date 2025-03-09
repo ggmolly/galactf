@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>Uber-Secure Encrypted File Reader</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
+  </head>
+  <body class="bg-dark text-light">
+    <div class="hero text-center p-5 bg-dark text-light">
+      <h1 class="display-4">🔐 Uber-Secure Encrypted File Reader 🔐</h1>
+      <p class="lead mt-3">
+        Experience the unparalleled power of our ultra-advanced, military-grade,
+        post-quantum, space-certified, AI-enhanced encryption system!
+      </p>
+      <p>
+        Using state-of-the-art algorithms inspired by ancient cryptographic
+        techniques, we ensure your data is more secure than a vault inside
+        another vault inside a black hole.
+      </p>
+      <p class="text-warning font-italic">
+        WARNING: Only the most elite cryptographers can decipher our
+        revolutionary encryption.
+      </p>
+      <hr class="my-4" />
+      <p>
+        To access the next level of security, please enter your unique,
+        one-time-use, AI-generated, quantum-resistant cipher key below. It was
+        generated when you created your account.
+      </p>
+      <form
+        class="input-group mb-3 w-50 mx-auto"
+        action="/api/v1/factories/one_trick"
+        method="POST"
+      >
+        <input
+          type="text"
+          name="key"
+          class="form-control text-center"
+          placeholder="Enter your cipher key"
+          aria-label="Cipher Key"
+          aria-describedby="basic-addon2"
+          maxlength="32"
+          minlength="32"
+          required
+        />
+        <div class="input-group-append">
+          <button class="btn btn-outline-warning">Submit Key</button>
+        </div>
+      </form>
+      <p class="text-muted mt-4">
+        If you don't have your key, please refer to the highly classified,
+        triple-encrypted, time-sensitive documentation sent to your quantum
+        email.
+      </p>
+      <p class="text-danger font-weight-bold">
+        Any attempt to brute force this will result in immediate blacklisting by
+        our AI-powered security system. 🔥
+      </p>
+      <hr class="my-4" />
+      <form
+        class="w-50 mx-auto"
+        action="/api/v1/factories/one_trick/encrypt"
+        method="POST"
+      >
+        <h3 class="display-5">Encrypt your text</h3>
+        <p class="font-italic text-light">
+          To test the strength of our encryption, enter your text. It will be
+          encrypted with the key tied to your account.
+        </p>
+        <textarea
+          type="text"
+          name="text"
+          rows="3"
+          class="form-control w-100"
+          placeholder="Enter your text here (max 256 characters)"
+          aria-label="Text to encrypt"
+          maxlength="256"
+          required
+        ></textarea>
+        <div class="input-group-append mt-3">
+          <button class="btn btn-outline-success w-100">Encrypt</button>
+        </div>
+      </form>
+    </div>
+  </body>
+</html>

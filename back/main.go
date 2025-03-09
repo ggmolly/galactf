@@ -10,6 +10,7 @@ import (
 	"github.com/ggmolly/galactf/orm"
 	"github.com/ggmolly/galactf/routes"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/template/html/v2"
 	"github.com/joho/godotenv"
 )
 
@@ -28,8 +29,12 @@ func init() {
 }
 
 func main() {
+	// templating engine (used for challenges' front-ends)
+	engine := html.New("./views", ".html")
+
 	app := fiber.New(fiber.Config{
 		AppName:     "galactf",
+		Views:       engine,
 		JSONEncoder: sonic.Marshal,
 		JSONDecoder: sonic.Unmarshal,
 	})
@@ -52,7 +57,14 @@ func main() {
 		}
 		factoriesGroup := apiGroup.Group("/factories", middlewares.DummyAuthMiddleware)
 		{
-			factoriesGroup.Get("/elite_encryption", factories.GenerateEliteEncryption)
+			factoriesGroup.Get("/elite_encryption", middlewares.ChallengeUnlockedMiddleware("elite encryption"), factories.GenerateEliteEncryption)
+
+			// "One trick" challenge
+			oneTrickGroup := factoriesGroup.Group("/one_trick")
+			{
+				oneTrickGroup.Get("/", middlewares.ChallengeUnlockedMiddleware("one trick"), factories.RenderOneTrick)
+			}
+
 		}
 	}
 
