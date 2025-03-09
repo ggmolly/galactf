@@ -36,6 +36,10 @@ func main() {
 
 	apiGroup := app.Group("/api/v1")
 	{
+		authGroup := apiGroup.Group("/auth")
+		{
+			authGroup.Get("/me", routes.GetUser)
+		}
 		challengesGroup := apiGroup.Group("/challenges", middlewares.DummyAuthMiddleware)
 		{
 			challengesGroup.Get("/", routes.GetChallenges)

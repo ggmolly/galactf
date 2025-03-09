@@ -14,10 +14,10 @@ import {
   ExternalLinkIcon,
   FileIcon,
   FlagIcon,
+  LightbulbIcon,
   LinkIcon,
-  SparkleIcon,
+  SparklesIcon,
 } from "lucide-react";
-import { CategoryBadge } from "./CategoryBadge";
 import { useEffect, useState } from "react";
 import { Skeleton } from "./ui/skeleton";
 import { toast } from "sonner";
@@ -25,6 +25,8 @@ import { axiosErrorFactory } from "@/utils/errorFactory";
 import { apiClient } from "@/lib/axios";
 import { Attempt } from "@/interfaces/attempt.interface";
 import { formatBytes } from "@/utils/formatBytes";
+import { cn } from "@/lib/utils";
+import { useAuth } from "@/providers/auth.provider";
 
 const flagRegex = /^GALA{[A-Za-z0-9_-]{24,48}}$/;
 export interface ChallengeModalProps {
@@ -41,6 +43,8 @@ export default function ChallengeModal({
   const [solvers, setSolvers] = useState<Attempt[] | undefined>(undefined);
   const [flag, setFlag] = useState<string>("");
   const [submitting, setSubmitting] = useState<boolean>(false);
+
+  const { user } = useAuth();
 
   const fetchChallengeSolvers = (id: number) => {
     apiClient
@@ -105,27 +109,36 @@ export default function ChallengeModal({
           {challenge?.description ?? "No description available"}
         </DialogDescription>
 
-        <span className="text-sm">
-          Categories ({challenge?.categories.length ?? 0}):
-        </span>
-        <div className="flex flex-wrap gap-2 items-center">
-          {challenge?.categories.map((category, i) => (
-            <CategoryBadge key={i} category={category} />
-          ))}
+        <div className="flex flex-wrap items-center mt-1 text-xs gap-2">
+          <SparklesIcon className="mr-2 h-4 w-4 text-destructive-foreground" />
+          <p>First blood:</p>
+          {solvers === undefined ? (
+            <Skeleton className="w-16 h-6" />
+          ) : (
+            <span className={cn("font-bold", user.id === solvers[0].user.id)}>
+              {solvers[0].user.name}
+            </span>
+          )}
         </div>
 
-        <div className="flex flex-wrap items-center mt-1">
-          <SparkleIcon className="mr-2 h-4 w-4" />
+        <div className="flex flex-wrap items-center mt-1 text-xs">
+          <LightbulbIcon className="mr-2 h-4 w-4" />
           {solvers === undefined ? (
             <SolversSkeleton />
           ) : (
-            <>
-              <span className="text-sm">Solvers ({solvers?.length ?? 0}):</span>
-              <br />
-              <p className="text-sm">
-                {solvers.map((solver) => solver.user.name).join(", ")}
-              </p>
-            </>
+            <div className="flex flex-col gap-2">
+              <span>Solvers ({solvers?.length ?? 0}):</span>
+              <div className="flex flex-wrap gap-2 items-center">
+                {solvers.map((solver, i) => (
+                  <span
+                    key={i}
+                    className={cn("font-bold", user.id === solver.user.id)}
+                  >
+                    {solver.user.name + (i === solvers.length - 1 ? "" : ", ")}
+                  </span>
+                ))}
+              </div>
+            </div>
           )}
         </div>
         {challenge?.attachments.length > 0 && (
