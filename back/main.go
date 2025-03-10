@@ -89,6 +89,8 @@ func main() {
 			oneTrickGroup := factoriesGroup.Group("/one_trick")
 			{
 				oneTrickGroup.Get("/", middlewares.ChallengeUnlockedMiddleware("one trick"), factories.RenderOneTrick)
+				oneTrickGroup.Post("/", middlewares.ChallengeUnlockedMiddleware("one trick"), factories.SubmitOneTrick)
+				oneTrickGroup.Post("/encrypt", middlewares.ChallengeUnlockedMiddleware("one trick"), factories.EncryptOneTrick)
 			}
 
 		}
