@@ -161,7 +161,11 @@ export default function ChallengeModal({
                 <div key={i} className="flex gap-x-2 items-center">
                   <a
                     className="flex gap-x-2 text-sm items-center"
-                    href={import.meta.env.VITE_API_URL + attachment.url}
+                    href={
+                      attachment.url.startsWith("http")
+                        ? attachment.url
+                        : import.meta.env.VITE_API_URL + attachment.url
+                    }
                     target="_blank"
                   >
                     {attachment.type === "url" ? (
@@ -206,8 +210,8 @@ export default function ChallengeModal({
             {challenge.solved
               ? "Solved"
               : submitting
-                ? "Submitting..."
-                : "Submit"}
+              ? "Submitting..."
+              : "Submit"}
           </Button>
         </DialogFooter>
       </DialogContent>
