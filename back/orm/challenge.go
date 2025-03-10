@@ -59,7 +59,7 @@ func GetChallengeStats(userID uint64) ([]ChallengeStats, error) {
 				solvedAttempts++
 			}
 		}
-		challenge.Solvers = uint64(len(challenge.Attempts))
+		challenge.Solvers = uint64(solvedAttempts)
 		if totalAttempts > 0 {
 			challenge.SolveRate = float64(solvedAttempts) / float64(totalAttempts)
 		} else {
@@ -118,7 +118,7 @@ func GetChallengeStatsById(id int, userID uint64) (*ChallengeStats, error) {
 		challenge.SolveRate = 0
 	}
 	challenge.Solved = false
-	challenge.Solvers = uint64(len(challenge.Attempts))
+	challenge.Solvers = uint64(solvedAttempts)
 	for _, attempt := range challenge.Attempts {
 		if attempt.UserID == userID && attempt.Success {
 			challenge.Solved = true
