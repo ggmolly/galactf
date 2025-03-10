@@ -124,31 +124,31 @@
 }
 
 @font-face {
-  font-family: 'Ubuntu Mono';
-  src: url('/fonts/UbuntuMono-Regular.ttf') format('truetype');
+  font-family: "Ubuntu Mono";
+  src: url("/public/UbuntuMono-Regular.woff2") format("woff2");
 }
 
 @font-face {
-  font-family: 'Ubuntu Mono';
+  font-family: "Ubuntu Mono";
   font-weight: bold;
-  src: url('/fonts/UbuntuMono-Bold.ttf') format('truetype');
+  src: url("/public/UbuntuMono-Bold.woff2") format("woff2");
 }
 
 @font-face {
-  font-family: 'Ubuntu Mono';
+  font-family: "Ubuntu Mono";
   font-style: italic;
-  src: url('/fonts/UbuntuMono-Italic.ttf') format('truetype');
+  src: url("/public/UbuntuMono-Italic.woff2") format("woff2");
 }
 
 @font-face {
-  font-family: 'Ubuntu Mono';
+  font-family: "Ubuntu Mono";
   font-weight: bold;
   font-style: italic;
-  src: url('/fonts/UbuntuMono-BoldItalic.ttf') format('truetype');
+  src: url("/public/UbuntuMono-BoldItalic.woff2") format("woff2");
 }
 
 * {
-  font-family: 'Ubuntu Mono', monospace;
+  font-family: "Ubuntu Mono", monospace;
 }
 
 a {
