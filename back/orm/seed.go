@@ -34,6 +34,20 @@ func seedRealChallenges() {
 			},
 		},
 		{
+			Name:        "super elite encryption",
+			Difficulty:  0,
+			Categories:  []string{"crypto"},
+			Description: "This time we found a better encryption algorithm. There is no way someone could break this one.",
+			Attachments: []Attachment{
+				{
+					Type:  "url",
+					Title: "super_top_secret_data.txt",
+					Size:  0,
+					URL:   "/factories/super_elite_encryption",
+				},
+			},
+		},
+		{
 			Name:        "one trick",
 			Difficulty:  1,
 			Categories:  []string{"crypto", "reverse"},
@@ -48,16 +62,16 @@ func seedRealChallenges() {
 			},
 		},
 		{
-			Name:        "super elite encryption",
-			Difficulty:  0,
-			Categories:  []string{"crypto"},
-			Description: "This time we found a better encryption algorithm. There is no way someone could break this one.",
+			Name:        "super mega elite encryption",
+			Difficulty:  1,
+			Categories:  []string{"crypto"}, // trop nul les challenges stegano mais j'aime bien l'idée pour une fois (normal c'est mon idée)
+			Description: "Third time's the charm, they say. (this is the last one, we promise.)",
 			Attachments: []Attachment{
 				{
 					Type:  "url",
-					Title: "super_top_secret_data.txt",
+					Title: "🤫.txt",
 					Size:  0,
-					URL:   "/factories/super_elite_encryption",
+					URL:   "/factories/super_mega_elite_encryption",
 				},
 			},
 		},

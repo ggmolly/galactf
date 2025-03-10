@@ -52,8 +52,8 @@ func main() {
 	}))
 
 	app.Use(logger.New(logger.Config{
-		Format: "[${time}] [${ip}] [${method}] [${status}] @ ${path} | ${latency}\n",
-		TimeZone: "UTC",
+		Format:        "[${time}] [${ip}] [${method}] [${status}] @ ${path} | ${latency}\n",
+		TimeZone:      "UTC",
 		DisableColors: true,
 	}))
 
@@ -85,6 +85,7 @@ func main() {
 		{
 			factoriesGroup.Get("/elite_encryption", middlewares.ChallengeUnlockedMiddleware("elite encryption"), factories.GenerateEliteEncryption)
 			factoriesGroup.Get("/super_elite_encryption", middlewares.ChallengeUnlockedMiddleware("super elite encryption"), factories.GenerateSuperEliteEncryption)
+			factoriesGroup.Get("/super_mega_elite_encryption", middlewares.ChallengeUnlockedMiddleware("super mega elite encryption"), factories.GenerateEmojiStegano)
 
 			// "One trick" challenge
 			oneTrickGroup := factoriesGroup.Group("/one_trick")
