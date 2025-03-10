@@ -80,17 +80,10 @@ func SubmitOneTrick(c *fiber.Ctx) error {
 	var cipherBuf bytes.Buffer
 	cipherBuf.Grow(len(userContentBytes))
 	for i, b := range userContentBytes {
-		cipherBuf.WriteByte(b ^ userKey[i%len(userKey)])
+		cipherBuf.WriteByte(b ^ userKey[i%len(userKey)] ^ key[i%len(key)])
 	}
 
-	cipherBytes := cipherBuf.Bytes()
-	var outputBuf bytes.Buffer
-	outputBuf.Grow(len(cipherBytes))
-	keyBytes := []byte(key)
-	for i, b := range cipherBytes {
-		outputBuf.WriteByte(b ^ keyBytes[i%len(keyBytes)])
-	}
-	c.WriteString(outputBuf.String())
+	c.WriteString(cipherBuf.String())
 	return c.SendStatus(fiber.StatusOK)
 }
 
