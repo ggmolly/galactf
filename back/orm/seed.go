@@ -81,6 +81,20 @@ func seedRealChallenges() {
 				},
 			},
 		},
+		{
+			Name: "more or less",
+			Difficulty: 0,
+			Categories: []string{"misc"},
+			Description: "Everyone knows what it is, but nobody knows how to write it.",
+			Attachments: []Attachment{
+				{
+					Type:  "url",
+					Title: "run_me.bf",
+					Size:  0,
+					URL:   "/factories/more_or_less",
+				},
+			},
+		},
 	}
 
 	// Create manually every challenges to skip already existing ones
