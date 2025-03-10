@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"os"
+	"strings"
 
 	"github.com/bytedance/sonic"
 	"github.com/ggmolly/galactf/factories"
@@ -10,6 +11,9 @@ import (
 	"github.com/ggmolly/galactf/orm"
 	"github.com/ggmolly/galactf/routes"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
+	"github.com/gofiber/fiber/v2/middleware/logger"
+	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/gofiber/template/html/v2"
 	"github.com/joho/godotenv"
 )
@@ -38,6 +42,28 @@ func main() {
 		JSONEncoder: sonic.Marshal,
 		JSONDecoder: sonic.Unmarshal,
 	})
+
+	app.Use(cors.New(cors.Config{
+		AllowMethods: "GET,POST,PUT,DELETE,PATCH,OPTIONS",
+		AllowOriginsFunc: func(origin string) bool {
+			return strings.Contains(origin, "localhost") || strings.Contains(origin, "127.0.0.1")
+		},
+		AllowCredentials: true,
+	}))
+
+	app.Use(logger.New(logger.Config{
+		Format: "[${time}] [${ip}] [${method}] [${status}] @ ${path} | ${latency}\n",
+		TimeZone: "UTC",
+		DisableColors: true,
+	}))
+
+	app.Use(recover.New(recover.Config{
+		EnableStackTrace: true,
+		StackTraceHandler: func(c *fiber.Ctx, e interface{}) {
+			// TODO: discord webhook
+			log.Println(e)
+		},
+	}))
 
 	apiGroup := app.Group("/api/v1")
 	{
