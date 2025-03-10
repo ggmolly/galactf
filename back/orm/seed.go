@@ -61,6 +61,26 @@ func seedRealChallenges() {
 				},
 			},
 		},
+		{
+			Name:        "quack",
+			Difficulty:  2,
+			Categories:  []string{"stegano"},
+			Description: "I love this photo! I wonder who took it...",
+			Attachments: []Attachment{
+				{
+					Type:  "file",
+					Title: "quack.jpg",
+					Size:  624247,
+					URL:   "/factories/quack",
+				},
+				{
+					Type:  "url",
+					Title: "source",
+					Size:  0,
+					URL:   "https://www.pexels.com/photo/depth-of-field-photography-of-mallard-duck-on-body-of-water-660266/",
+				},
+			},
+		},
 	}
 
 	// Create manually every challenges to skip already existing ones
