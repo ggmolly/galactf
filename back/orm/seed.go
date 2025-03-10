@@ -47,6 +47,20 @@ func seedRealChallenges() {
 				},
 			},
 		},
+		{
+			Name:        "super elite encryption",
+			Difficulty:  0,
+			Categories:  []string{"crypto"},
+			Description: "This time we found a better encryption algorithm. There is no way someone could break this one.",
+			Attachments: []Attachment{
+				{
+					Type:  "url",
+					Title: "super_top_secret_data.txt",
+					Size:  0,
+					URL:   "/factories/super_elite_encryption",
+				},
+			},
+		},
 	}
 
 	// Create manually every challenges to skip already existing ones
