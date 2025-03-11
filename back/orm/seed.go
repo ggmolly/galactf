@@ -109,6 +109,20 @@ func seedRealChallenges() {
 				},
 			},
 		},
+		{
+			Name:        "cat image",
+			Difficulty:  2,
+			Categories:  []string{"stegano"},
+			Description: "This is my cat, his name is Pixel! Isn't he adorable?",
+			Attachments: []Attachment{
+				{
+					Type:  "url",
+					Title: "image_of_a_cat.bmp",
+					Size:  0,
+					URL:   "/factories/cat_image",
+				},
+			},
+		},
 	}
 
 	// Create manually every challenges to skip already existing ones
