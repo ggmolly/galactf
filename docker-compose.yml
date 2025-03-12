@@ -13,3 +13,11 @@ services:
     restart: unless-stopped
     ports:
       - "6379:6379"
+  ctf-bobby-library:
+    container_name: bobby_library
+    build:
+      context: ./python_chals
+      dockerfile: bobby_library.dockerfile
+    restart: unless-stopped
+    ports: # TODO: remove this in prod mode
+      - "10000:8080"
