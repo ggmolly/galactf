@@ -18,7 +18,7 @@ type ProxiedChallengeSettings struct {
 }
 
 var (
-	bobbySettings = map[string]map[string]ProxiedChallengeSettings{
+	proxySettings = map[string]map[string]ProxiedChallengeSettings{
 		"bobby_library": {
 			"dev":  {Hostname: "127.0.0.1", Port: 10000},
 			"prod": {Hostname: "bobby_library", Port: 8080},
@@ -31,7 +31,7 @@ func ProxyFactory(containerName, baseURL, prettyChalName string) fiber.Handler {
 		user := middlewares.ReadUser(c)
 		flag := orm.GenerateFlag(user, prettyChalName)
 
-		conf := bobbySettings[containerName][os.Getenv("MODE")]
+		conf := proxySettings[containerName][os.Getenv("MODE")]
 		remotePath := fmt.Sprintf(
 			"http://%s:%d/%s",
 			conf.Hostname,
