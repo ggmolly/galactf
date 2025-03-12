@@ -25,6 +25,10 @@ func init() {
 		log.Fatal("Error loading .env file, does it exist?")
 	}
 
+	if os.Getenv("MODE") != "dev" && os.Getenv("MODE") != "prod" {
+		log.Fatal("MODE must be either 'dev' or 'prod', check your .env file")
+	}
+
 	orm.InitDatabase()
 
 	if len(os.Args) > 1 && os.Args[1] == "seed" {
@@ -52,8 +56,8 @@ func main() {
 	}))
 
 	app.Use(logger.New(logger.Config{
-		Format: "[${time}] [${ip}] [${method}] [${status}] @ ${path} | ${latency}\n",
-		TimeZone: "UTC",
+		Format:        "[${time}] [${ip}] [${method}] [${status}] @ ${path} | ${latency}\n",
+		TimeZone:      "UTC",
 		DisableColors: true,
 	}))
 
@@ -96,6 +100,12 @@ func main() {
 				oneTrickGroup.Post("/encrypt", middlewares.ChallengeUnlockedMiddleware("one trick"), factories.EncryptOneTrick)
 			}
 
+			// Every proxied challenges, the User ID is passed in 'X-User-ID' header
+			// and the flag matching the user is passed in 'X-GalaCTF-Flag' header
+			// 1st argument is: the container name in docker-compose.yml
+			// 2nd argument is: the base URL of the challenge (which is the URL that's in the Group() call)
+			// 3rd argument is: the name of the challenge in the database (used to generate & validate the flag)
+			factoriesGroup.Group("/bobby_library", routes.ProxyFactory("bobby_library", "/bobby_library", "bobby's library"))
 		}
 	}
 
