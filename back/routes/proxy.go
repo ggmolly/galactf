@@ -31,8 +31,6 @@ func ProxyFactory(containerName, baseURL, prettyChalName string) fiber.Handler {
 		user := middlewares.ReadUser(c)
 		flag := orm.GenerateFlag(user, prettyChalName)
 
-		log.Println(flag)
-
 		conf := bobbySettings[containerName][os.Getenv("MODE")]
 		remotePath := fmt.Sprintf(
 			"http://%s:%d/%s",
