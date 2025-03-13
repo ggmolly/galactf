@@ -123,6 +123,20 @@ func seedRealChallenges() {
 				},
 			},
 		},
+		{
+			Name:        "(un)secure notes",
+			Difficulty:  1,
+			Categories:  []string{"web", "pwn"},
+			Description: "the app where your secrets are never quite as safe as you think. Organize your thoughts, jot down your ideas, and try to keep them locked up…",
+			Attachments: []Attachment{
+				{
+					Type:  "url",
+					Title: "(un)secure notes",
+					Size:  0,
+					URL:   "/factories/unsecure_notes",
+				},
+			},
+		},
 	}
 
 	// Create manually every challenges to skip already existing ones

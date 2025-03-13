@@ -107,6 +107,7 @@ func main() {
 			// 2nd argument is: the base URL of the challenge (which is the URL that's in the Group() call)
 			// 3rd argument is: the name of the challenge in the database (used to generate & validate the flag)
 			factoriesGroup.Group("/bobby_library", routes.ProxyFactory("bobby_library", "/bobby_library", "bobby's library"))
+			factoriesGroup.Group("/unsecure_notes", routes.ProxyFactory("unsecure_notes", "/unsecure_notes", "(un)secure notes"))
 		}
 	}
 
