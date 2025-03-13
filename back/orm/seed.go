@@ -82,9 +82,9 @@ func seedRealChallenges() {
 			},
 		},
 		{
-			Name: "more or less",
-			Difficulty: 0,
-			Categories: []string{"misc"},
+			Name:        "more or less",
+			Difficulty:  0,
+			Categories:  []string{"misc"},
 			Description: "Everyone knows what it is, but nobody knows how to write it.",
 			Attachments: []Attachment{
 				{
@@ -92,6 +92,20 @@ func seedRealChallenges() {
 					Title: "run_me.bf",
 					Size:  0,
 					URL:   "/factories/more_or_less",
+				},
+			},
+		},
+		{
+			Name:        "bobby's library",
+			Difficulty:  1,
+			Categories:  []string{"web", "pwn"},
+			Description: "Bobby made an online book library using sqlite! Check it out!",
+			Attachments: []Attachment{
+				{
+					Type:  "url",
+					Title: "bobby's website",
+					Size:  0,
+					URL:   "/factories/bobby_library",
 				},
 			},
 		},
