@@ -91,6 +91,7 @@ func main() {
 			factoriesGroup.Get("/super_elite_encryption", middlewares.ChallengeUnlockedMiddleware("super elite encryption"), factories.GenerateSuperEliteEncryption)
 			factoriesGroup.Get("/quack", middlewares.ChallengeUnlockedMiddleware("quack"), factories.GenerateQuackChallenge)
 			factoriesGroup.Get("/more_or_less", middlewares.ChallengeUnlockedMiddleware("more or less"), factories.GenerateMoreOrLess)
+			factoriesGroup.Get("/cat_image", middlewares.ChallengeUnlockedMiddleware("cat image"), factories.GenerateCatImage)
 
 			// "One trick" challenge
 			oneTrickGroup := factoriesGroup.Group("/one_trick")
