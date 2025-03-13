@@ -34,20 +34,6 @@ func seedRealChallenges() {
 			},
 		},
 		{
-			Name:        "one trick",
-			Difficulty:  1,
-			Categories:  []string{"crypto", "reverse"},
-			Description: "Some say good security needs multiple layers. Others believe in minimalism. Here, we went all in on minimalism.",
-			Attachments: []Attachment{
-				{
-					Type:  "url",
-					Title: "uber-secure encrypted file reader",
-					Size:  0,
-					URL:   "/factories/one_trick",
-				},
-			},
-		},
-		{
 			Name:        "super elite encryption",
 			Difficulty:  0,
 			Categories:  []string{"crypto"},
@@ -62,8 +48,36 @@ func seedRealChallenges() {
 			},
 		},
 		{
+			Name:        "more or less",
+			Difficulty:  0,
+			Categories:  []string{"misc"},
+			Description: "Everyone knows what it is, but nobody knows how to write it.",
+			Attachments: []Attachment{
+				{
+					Type:  "url",
+					Title: "run_me.bf",
+					Size:  0,
+					URL:   "/factories/more_or_less",
+				},
+			},
+		},
+		{
+			Name:        "exclusive club",
+			Difficulty:  1,
+			Categories:  []string{"crypto", "reverse"},
+			Description: "Some say good security needs multiple layers. Others believe in minimalism. Here, we went all in on minimalism.",
+			Attachments: []Attachment{
+				{
+					Type:  "url",
+					Title: "uber-secure encrypted file reader",
+					Size:  0,
+					URL:   "/factories/one_trick",
+				},
+			},
+		},
+		{
 			Name:        "quack",
-			Difficulty:  2,
+			Difficulty:  1,
 			Categories:  []string{"stegano"},
 			Description: "I love this photo! I wonder who took it...",
 			Attachments: []Attachment{
@@ -78,20 +92,6 @@ func seedRealChallenges() {
 					Title: "source",
 					Size:  0,
 					URL:   "https://www.pexels.com/photo/depth-of-field-photography-of-mallard-duck-on-body-of-water-660266/",
-				},
-			},
-		},
-		{
-			Name:        "more or less",
-			Difficulty:  0,
-			Categories:  []string{"misc"},
-			Description: "Everyone knows what it is, but nobody knows how to write it.",
-			Attachments: []Attachment{
-				{
-					Type:  "url",
-					Title: "run_me.bf",
-					Size:  0,
-					URL:   "/factories/more_or_less",
 				},
 			},
 		},
@@ -111,7 +111,7 @@ func seedRealChallenges() {
 		},
 		{
 			Name:        "cat image",
-			Difficulty:  2,
+			Difficulty:  1,
 			Categories:  []string{"stegano"},
 			Description: "This is my cat, his name is Pixel! Isn't he adorable?",
 			Attachments: []Attachment{
