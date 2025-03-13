@@ -15,3 +15,14 @@ class UserIDMiddleware(BaseHTTPMiddleware):
         except ValueError:
             return JSONResponse({"error": "Invalid X-User-ID"}, status_code=401)
         return await call_next(request)
+
+class OriginalURLMiddleware(BaseHTTPMiddleware):
+    """
+    This middleware is used to inject the original URL in the response headers.
+    """
+    async def dispatch(self, request: Request, call_next):
+        original_url = request.headers.get("X-Root-Uri", "")
+        if original_url.endswith("/"):
+            original_url = original_url[:-1]
+        request.state.original_url = original_url
+        return await call_next(request)
