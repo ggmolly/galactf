@@ -7,11 +7,12 @@ export interface Challenge {
   difficulty: number;
   categories: string[];
   attachments: Attachment[];
-  solved?: boolean;
-  solvers?: number;
   reveal_in?: number;
 }
 
 export interface ChallengeWithSolveRate extends Challenge {
   solve_rate: number;
+  solved: boolean;
+  solvers: number;
+  total_attempts: number;
 }

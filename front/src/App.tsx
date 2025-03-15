@@ -1,49 +1,17 @@
-import { useEffect, useState } from "react";
-import { apiClient } from "./lib/axios";
+import { useState } from "react";
 import { ChallengeWithSolveRate } from "./interfaces/challenge.interface";
-import { toast } from "sonner";
 import ChallengeCard, {
   ChallengeCardSkeleton,
 } from "./components/ChallengeCard";
 import ChallengeModal from "./components/ChallengeModal";
-import { axiosErrorFactory } from "./utils/errorFactory";
-import { useAuth } from "./providers/auth.provider";
+import { useChallenges } from "./providers/challenges.provider";
 
 function App() {
-  const [challenges, setChallenges] = useState<
-    ChallengeWithSolveRate[] | undefined
-  >(undefined);
   const [selectedChallenge, setSelectedChallenge] = useState<
     ChallengeWithSolveRate | undefined
   >(undefined);
   const [modalVisible, setModalVisible] = useState(false);
-  const { user } = useAuth();
-
-  const loadChallenges = () => {
-    apiClient
-      .get("/challenges")
-      .then((res) => {
-        setChallenges(res.data.data);
-      })
-      .catch((err) => {
-        const errorMessage = axiosErrorFactory(err);
-        toast.error(errorMessage, {
-          duration: 5000,
-          dismissible: true,
-          action: {
-            label: "Retry",
-            onClick: () => loadChallenges(),
-          },
-        });
-      });
-  };
-
-  useEffect(() => {
-    if (!user.id) {
-      return;
-    }
-    loadChallenges();
-  }, [user]);
+  const { challenges } = useChallenges();
 
   return (
     <>

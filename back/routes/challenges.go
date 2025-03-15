@@ -7,6 +7,7 @@ import (
 	"github.com/ggmolly/galactf/dto"
 	"github.com/ggmolly/galactf/middlewares"
 	"github.com/ggmolly/galactf/orm"
+	protobuf "github.com/ggmolly/galactf/proto"
 	"github.com/ggmolly/galactf/utils"
 	"github.com/gofiber/fiber/v2"
 )
@@ -83,6 +84,18 @@ func SubmitFlag(c *fiber.Ctx) error {
 	if err := orm.GormDB.Create(attempt).Error; err != nil {
 		return utils.RestStatusFactory(c, fiber.StatusInternalServerError, "Failed to submit flag")
 	}
+
+	// Broadcast the solve event to all connected clients
+	event := protobuf.ChallengeAttempt{
+		User: &protobuf.User{
+			Id: user.ID,
+		},
+		ChallengeId: chal.ID,
+		Success:     isValid,
+	}
+
+	Broadcast(protobuf.WS_CHALLENGE_ATTEMPT, &event)
+
 	if !isValid { // Return an HTTP 201 (Created) status code if the flag is invalid but submitted successfully
 		return utils.RestStatusFactory(c, fiber.StatusCreated, "Invalid flag! Try again.")
 	} else { // Otherwise, return an HTTP 200 (OK) status code
