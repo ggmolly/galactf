@@ -4,6 +4,7 @@ go 1.24.0
 
 require (
 	github.com/bytedance/sonic v1.12.10
+	github.com/cespare/xxhash v1.1.0
 	github.com/go-faker/faker/v4 v4.6.0
 	github.com/go-playground/validator/v10 v10.25.0
 	github.com/gofiber/contrib/websocket v1.3.3
@@ -12,6 +13,7 @@ require (
 	github.com/joho/godotenv v1.5.1
 	github.com/lib/pq v1.10.9
 	golang.org/x/image v0.25.0
+	google.golang.org/protobuf v1.36.5
 	gorm.io/driver/postgres v1.5.11
 	gorm.io/gorm v1.25.12
 )
@@ -19,7 +21,6 @@ require (
 require (
 	github.com/andybalholm/brotli v1.1.0 // indirect
 	github.com/bytedance/sonic/loader v0.2.2 // indirect
-	github.com/cespare/xxhash v1.1.0 // indirect
 	github.com/cloudwego/base64x v0.1.5 // indirect
 	github.com/fasthttp/websocket v1.5.8 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.8 // indirect
