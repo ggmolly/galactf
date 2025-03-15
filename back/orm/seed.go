@@ -137,6 +137,20 @@ func seedRealChallenges() {
 				},
 			},
 		},
+		{
+			Name:        "just a moment...",
+			Description: "We developed a new ultra secure WAF anti-bot system. But some users were reporting a performance issue.. is V8 too slow?",
+			Difficulty:  4,
+			Categories:  []string{"web", "reverse", "crypto"},
+			Attachments: []Attachment{
+				{
+					Type:  "url",
+					Title: "captcha demo",
+					Size:  0,
+					URL:   "/factories/just_a_moment",
+				},
+			},
+		},
 	}
 
 	// Create manually every challenges to skip already existing ones

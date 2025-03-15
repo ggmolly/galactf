@@ -192,3 +192,6 @@ sketch
 # .pnp.*
 
 back/tmp
+
+venv
+__pycache__

@@ -27,6 +27,10 @@ var (
 			"dev":  {Hostname: "127.0.0.1", Port: 10001},
 			"prod": {Hostname: "unsecure_notes", Port: 8080},
 		},
+		"just_a_moment": {
+			"dev":  {Hostname: "127.0.0.1", Port: 10002},
+			"prod": {Hostname: "just_a_moment", Port: 8080},
+		},
 	}
 )
 
