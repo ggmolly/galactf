@@ -17,7 +17,15 @@ services:
     container_name: bobby_library
     build:
       context: ./python_chals
-      dockerfile: bobby_library.dockerfile
+      dockerfile: ./bobby_library/bobby_library.dockerfile
     restart: unless-stopped
     ports: # TODO: remove this in prod mode
       - "10000:8080"
+  ctf-unsecure-notes:
+    container_name: unsecure_notes
+    build:
+      context: ./python_chals
+      dockerfile: ./unsecure_notes/unsecure_notes.dockerfile
+    restart: unless-stopped
+    ports: # TODO: remove this in prod mode
+      - "10001:8080"
