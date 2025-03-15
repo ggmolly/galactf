@@ -29,3 +29,11 @@ services:
     restart: unless-stopped
     ports: # TODO: remove this in prod mode
       - "10001:8080"
+  ctf-just-a-moment:
+    container_name: just_a_moment
+    build:
+      context: ./python_chals
+      dockerfile: ./just_a_moment/just_a_moment.dockerfile
+    restart: unless-stopped
+    ports: # TODO: remove this in prod mode
+      - "10002:8080"
