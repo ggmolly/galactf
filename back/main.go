@@ -106,9 +106,10 @@ func main() {
 			// 1st argument is: the container name in docker-compose.yml
 			// 2nd argument is: the base URL of the challenge (which is the URL that's in the Group() call)
 			// 3rd argument is: the name of the challenge in the database (used to generate & validate the flag)
-			factoriesGroup.Group("/bobby_library", routes.ProxyFactory("bobby_library", "/bobby_library", "bobby's library"))
-			factoriesGroup.Group("/unsecure_notes", routes.ProxyFactory("unsecure_notes", "/unsecure_notes", "(un)secure notes"))
-			factoriesGroup.Group("/just_a_moment", routes.ProxyFactory("just_a_moment", "/just_a_moment", "just a moment..."))
+			factoriesGroup.Group("/bobby_library", middlewares.ChallengeUnlockedMiddleware("bobby's library"), routes.ProxyFactory("bobby_library", "/bobby_library", "bobby's library"))
+			factoriesGroup.Group("/unsecure_notes", middlewares.ChallengeUnlockedMiddleware("(un)secure notes"), routes.ProxyFactory("unsecure_notes", "/unsecure_notes", "(un)secure notes"))
+			factoriesGroup.Group("/just_a_moment", middlewares.ChallengeUnlockedMiddleware("just a moment..."), routes.ProxyFactory("just_a_moment", "/just_a_moment", "just a moment..."))
+			factoriesGroup.Group("/cookie_monster", middlewares.ChallengeUnlockedMiddleware("cookie monster"), routes.ProxyFactory("cookie_monster", "/cookie_monster", "cookie monster"))
 		}
 	}
 
