@@ -10,11 +10,11 @@ import { WsProvider } from "./providers/ws.provider.tsx";
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <AuthProvider>
-      <WsProvider>
-        <ChallengesProvider>
+      <ChallengesProvider>
+        <WsProvider>
           <App />
-        </ChallengesProvider>
-      </WsProvider>
+        </WsProvider>
+      </ChallengesProvider>
     </AuthProvider>
     <Toaster position="top-right" richColors className="pointer-events-auto" />
   </StrictMode>
