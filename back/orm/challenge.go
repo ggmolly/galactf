@@ -28,10 +28,11 @@ type Challenge struct {
 type ChallengeStats struct {
 	Challenge
 
-	SolveRate float64 `json:"solve_rate" faker:"-" gorm:"-"`
-	Solved    bool    `json:"solved" faker:"-" gorm:"-"`
-	Solvers   uint64  `json:"solvers" faker:"-" gorm:"-"`
-	RevealIn  uint64  `json:"reveal_in,omitempty" faker:"-" gorm:"-"` // relative time until reveal
+	SolveRate     float64 `json:"solve_rate" faker:"-" gorm:"-"`
+	Solved        bool    `json:"solved" faker:"-" gorm:"-"`
+	Solvers       uint64  `json:"solvers" faker:"-" gorm:"-"`
+	TotalAttempts int     `json:"total_attempts" faker:"-" gorm:"-"`
+	RevealIn      uint64  `json:"reveal_in,omitempty" faker:"-" gorm:"-"` // relative time until reveal
 }
 
 func GetChallengeStats(userID uint64) ([]ChallengeStats, error) {
@@ -52,7 +53,6 @@ func GetChallengeStats(userID uint64) ([]ChallengeStats, error) {
 	for i := range challenges {
 		challenge := &challenges[i]
 
-		totalAttempts := len(challenge.Attempts)
 		solvedAttempts := 0
 		for _, attempt := range challenge.Attempts {
 			if attempt.Success {
@@ -60,13 +60,13 @@ func GetChallengeStats(userID uint64) ([]ChallengeStats, error) {
 			}
 		}
 		challenge.Solvers = uint64(solvedAttempts)
-		if totalAttempts > 0 {
-			challenge.SolveRate = float64(solvedAttempts) / float64(totalAttempts)
+		challenge.TotalAttempts = len(challenge.Attempts)
+		if challenge.TotalAttempts > 0 {
+			challenge.SolveRate = float64(solvedAttempts) / float64(challenge.TotalAttempts)
 		} else {
 			challenge.SolveRate = 0
 		}
 
-		challenge.Solved = false
 		for _, attempt := range challenge.Attempts {
 			if attempt.UserID == userID && attempt.Success {
 				challenge.Solved = true
@@ -104,7 +104,7 @@ func GetChallengeStatsById(id int, userID uint64) (*ChallengeStats, error) {
 		return nil, err
 	}
 
-	totalAttempts := len(challenge.Attempts)
+	challenge.TotalAttempts = len(challenge.Attempts)
 	solvedAttempts := 0
 	for _, attempt := range challenge.Attempts {
 		if attempt.Success {
@@ -112,12 +112,11 @@ func GetChallengeStatsById(id int, userID uint64) (*ChallengeStats, error) {
 		}
 	}
 
-	if totalAttempts > 0 {
-		challenge.SolveRate = float64(solvedAttempts) / float64(totalAttempts)
+	if challenge.TotalAttempts > 0 {
+		challenge.SolveRate = float64(solvedAttempts) / float64(challenge.TotalAttempts)
 	} else {
 		challenge.SolveRate = 0
 	}
-	challenge.Solved = false
 	challenge.Solvers = uint64(solvedAttempts)
 	for _, attempt := range challenge.Attempts {
 		if attempt.UserID == userID && attempt.Success {
