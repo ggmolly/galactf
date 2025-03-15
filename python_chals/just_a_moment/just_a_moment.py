@@ -64,77 +64,7 @@ async def index(request: Request):
         <script src="https://cdnjs.cloudflare.com/ajax/libs/forge/1.3.1/forge.all.min.js" integrity="sha512-y8oWKnULY59b/Ce+mlekagFu+2M1R4FCPoQvG1Gvgp5mpM3UiTAQZY/3ai91gE0IW8/yk76JojiUkRlUP59F0Q==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
         <script defer>
-            async function verify(y, C = 0) {
-                const res = await fetch("{{original_url}}/verify", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({
-                        y: y
-                    })
-                });
-                if (res.status === 429) {
-                    alert("You're doing that too fast! Retry in a minute.");
-                    return;
-                }
-                const data = await res.json();
-                if (data.success) {
-                    if (C === 0) {
-                        $("#title").text("Captcha Solved - Get flag!");
-                        $("#description").text("To get the flag, click on the 'Get flag' button below.");
-                        $("#verify-btn").text("Get flag");
-                        $("#verify-btn").attr("disabled", false);
-                        $("#alert").removeClass("visually-hidden");
-                        $("#verify-btn").click(async function() {
-                            solveCaptcha("0000000")
-                        });
-
-                        $("#manual-btn").removeClass("visually-hidden");
-                        $("#manual-btn").click(function() {
-                            fetch("{{original_url}}/flag_x")
-                                .then((res) => res.json())
-                                .then((data) => {
-                                    $("#x-ctn").text(`Solve y for x = ${data.x}, g = '0000000'.`);
-                                    $("#x-ctn").parent().removeClass("visually-hidden");
-                                    $("#manual-btn").text("Submit manual solution");
-                                    $("#manual-btn").unbind("click");
-                                    $("#manual-btn").click(function() {
-                                        const y = prompt("y=?");
-                                        verify(y, 1);
-                                    });
-                                });
-                        });
-                    } else if (C === 1 && data.flag) {
-                        alert(`Congratulations! Here's your flag: ${data.flag}`);
-                    }
-                } else {
-                    alert(data.message);
-                }
-            }
-            const solveCaptcha = async (g = "0000") => {
-                const x = await fetch("{{original_url}}/x")
-                    .then((res) => res.json())
-                    .then((data) => data.x);
-                
-                const maxY = 1e9;
-                console.log(`[pow] solving y for x=${x}`);
-                
-                for (let y = 0; y < maxY; y++) {
-                    const hash = forge.md.sha256.create().update(`${x}${y}`).digest().toHex();
-                    if (hash.startsWith(g)) {
-                        console.log(`[pow] Found y: ${y}`);
-                        verify(y, g === "0000000" ? 1 : 0);
-                        return;
-                    }
-                }
-            };
-
-            $("#verify-btn").click(function() {
-                solveCaptcha();
-                $("#verify-btn").attr("disabled", true);
-                $("#verify-btn").text("Verifying...");
-            });
+            async function verify(t,e=0){const n=await fetch("{{original_url}}/verify",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({y:t})});if(429===n.status)return void alert("You're doing that too fast! Retry in a minute.");const a=await n.json();a.success?0===e?($("#title").text("Captcha Solved - Get flag!"),$("#description").text("To get the flag, click on the 'Get flag' button below."),$("#verify-btn").text("Get flag"),$("#verify-btn").attr("disabled",!1),$("#alert").removeClass("visually-hidden"),$("#verify-btn").click((async function(){solveCaptcha("0000000")})),$("#manual-btn").removeClass("visually-hidden"),$("#manual-btn").click((function(){fetch("{{original_url}}/flag_x").then((t=>t.json())).then((t=>{$("#x-ctn").text(`Solve y for x = ${t.x}, g = '0000000'.`),$("#x-ctn").parent().removeClass("visually-hidden"),$("#manual-btn").text("Submit manual solution"),$("#manual-btn").unbind("click"),$("#manual-btn").click((function(){verify(prompt("y=?"),1)}))}))}))):1===e&&a.flag&&alert(`Congratulations! Here's your flag: ${a.flag}`):alert(a.message)}const solveCaptcha=async(t="0000")=>{const e=await fetch("{{original_url}}/x").then((t=>t.json())).then((t=>t.x));console.log(`[pow] solving y for x=${e}`);for(let n=0;n<1e9;n++){if(forge.md.sha256.create().update(`${e}${n}`).digest().toHex().startsWith(t))return console.log(`[pow] Found y: ${n}`),void verify(n,"0000000"===t?1:0)}};$("#verify-btn").click((function(){solveCaptcha(),$("#verify-btn").attr("disabled",!0),$("#verify-btn").text("Verifying...")}));
         </script>
     </body>
     </html>
