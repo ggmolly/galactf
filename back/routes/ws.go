@@ -9,6 +9,7 @@ import (
 	"github.com/cespare/xxhash"
 	"github.com/ggmolly/galactf/orm"
 	"github.com/gofiber/contrib/websocket"
+	"google.golang.org/protobuf/proto"
 )
 
 type WsClient struct {
@@ -55,6 +56,86 @@ func RemoveClient(cid uint64) {
 	wsLock.Lock()
 	defer wsLock.Unlock()
 	delete(Sockets, cid)
+}
+
+// Broadcast to everyone
+func Broadcast(eventId uint8, msg proto.Message) {
+	if msg == nil {
+		return
+	}
+
+	var buf bytes.Buffer
+	buf.WriteByte(eventId)
+
+	msgBytes, err := proto.Marshal(msg)
+	if err != nil {
+		log.Printf("[-] error marshalling event: %s", err.Error())
+		return
+	}
+
+	buf.Write(msgBytes)
+
+	wsLock.Lock()
+	defer wsLock.Unlock()
+
+	for _, c := range Sockets {
+		c.Conn.WriteMessage(websocket.BinaryMessage, buf.Bytes())
+	}
+}
+
+// Broadcast to everyone except the user that triggered the event
+func BroadcastExcl(eventId uint8, msg proto.Message, user *orm.User) {
+	if msg == nil {
+		return
+	}
+
+	var buf bytes.Buffer
+	buf.WriteByte(eventId)
+
+	msgBytes, err := proto.Marshal(msg)
+	if err != nil {
+		log.Printf("[-] error marshalling event: %s", err.Error())
+		return
+	}
+
+	buf.Write(msgBytes)
+
+	wsLock.Lock()
+	defer wsLock.Unlock()
+
+	for _, c := range Sockets {
+		if c.UserID == user.ID {
+			continue
+		}
+		c.Conn.WriteMessage(websocket.BinaryMessage, buf.Bytes())
+	}
+}
+
+// Broadcast to a specific user
+func BroadcastTo(eventId uint8, msg proto.Message, user *orm.User) {
+	if msg == nil {
+		return
+	}
+
+	var buf bytes.Buffer
+	buf.WriteByte(eventId)
+
+	msgBytes, err := proto.Marshal(msg)
+	if err != nil {
+		log.Printf("[-] error marshalling event: %s", err.Error())
+		return
+	}
+
+	buf.Write(msgBytes)
+
+	wsLock.Lock()
+	defer wsLock.Unlock()
+
+	for _, c := range Sockets {
+		if c.UserID == user.ID {
+			c.Conn.WriteMessage(websocket.BinaryMessage, buf.Bytes())
+		}
+	}
 }
 
 func WsHandler(c *websocket.Conn) {
