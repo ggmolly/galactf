@@ -14,10 +14,7 @@ interface ChallengeCardProps {
   selectChallenge: (challenge: ChallengeWithSolveRate) => void;
 }
 
-export function ChallengeCard({
-  challenge,
-  selectChallenge,
-}: ChallengeCardProps) {
+export function ChallengeCard({ challenge, selectChallenge }: ChallengeCardProps) {
   if (!!challenge.reveal_in) {
     return <ChallengeCardLocked revealIn={challenge.reveal_in} />;
   }
@@ -44,9 +41,7 @@ export function ChallengeCard({
       </CardHeader>
       <CardContent>
         <div className="flex flex-col gap-2">
-          <span className="text-lg font-bold">
-            {computePoints(challenge.solvers ?? 0)} points
-          </span>
+          <span className="text-lg font-bold">{computePoints(challenge.solvers ?? 0)} points</span>
           <span className="text-xs text-muted-foreground">
             {(challenge.solve_rate * 100) | 0}% solved
           </span>
@@ -102,12 +97,8 @@ export function ChallengeCardLocked({ revealIn }: ChallengeCardLockedProps) {
       </CardHeader>
       <CardContent>
         <div className="flex flex-col gap-2">
-          <span className="text-lg font-bold text-muted-foreground">
-            {computePoints(0)} points
-          </span>
-          <span className="text-xs text-muted-foreground">
-            Not available yet
-          </span>
+          <span className="text-lg font-bold text-muted-foreground">{computePoints(0)} points</span>
+          <span className="text-xs text-muted-foreground">Not available yet</span>
         </div>
 
         <hr className="my-2" />
