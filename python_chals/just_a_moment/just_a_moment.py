@@ -6,13 +6,19 @@ from starlette.responses import JSONResponse, HTMLResponse
 from starlette.requests import Request
 from jinja2 import Template
 from shared_helpers import UserIDMiddleware, OriginalURLMiddleware
+from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
+from slowapi.util import get_remote_address
 
 FLAG_CHALS_LOCK = Lock()
 FLAG_CHALS = {}
 LOW = 0
 HIGH = 1
 
+limiter = Limiter(key_func=lambda request: request.state.user_id)
 app = Starlette()
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 app.add_middleware(UserIDMiddleware)
 app.add_middleware(OriginalURLMiddleware)
@@ -68,6 +74,10 @@ async def index(request: Request):
                         y: y
                     })
                 });
+                if (res.status === 429) {
+                    alert("You're doing that too fast! Retry in a minute.");
+                    return;
+                }
                 const data = await res.json();
                 if (data.success) {
                     if (C === 0) {
@@ -153,15 +163,18 @@ async def get_flag_x(request: Request):
         return JSONResponse(FLAG_CHALS[request.state.user_id])
 
 @app.route("/verify", methods=["POST"])
+@limiter.limit(limit_value="5/minute")
 async def verify(request: Request):
     data = await request.json()
     with FLAG_CHALS_LOCK:
         if request.state.user_id not in FLAG_CHALS:
             return JSONResponse({"error": "You have not generated a challenge yet!"}, status_code=400)
         chal = FLAG_CHALS[request.state.user_id]
-        sol = data["y"]
+        sol = str(data["y"])
+        if len(sol) > 16: # max length for 9007199254740991, early exit to avoid DoS
+            return JSONResponse({"success": False, "message": "Invalid solution. Please try again later."}, status_code=400)
         h = hashlib.sha256()
-        h.update((str(chal["x"]) + str(sol)).encode())
+        h.update((str(chal["x"]) + sol).encode())
         h = h.hexdigest()
         if chal["C"] == LOW and h.startswith("0000"):
             del FLAG_CHALS[request.state.user_id]
@@ -169,7 +182,7 @@ async def verify(request: Request):
         elif chal["C"] == HIGH and h.startswith("0000000"):
             del FLAG_CHALS[request.state.user_id]
             return JSONResponse({"success": True, "flag": request.headers.get("X-GalaCTF-Flag")})
-    return JSONResponse({"success": False, "message": "An unexpected error occurred. Please try again later. (is the solution invalid?)"}, status_code=500)
+    return JSONResponse({"success": False, "message": "Invalid solution."}, status_code=409)
 
 if __name__ == "__main__":
     import uvicorn
