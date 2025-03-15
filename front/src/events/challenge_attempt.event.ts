@@ -17,10 +17,15 @@ export function handleChalAttempt(
         return challenge;
       }
 
+      const newTotalAttempts = challenge.total_attempts + 1;
+      const newSolvers = event.success ? challenge.solvers + 1 : challenge.solvers;
+      const newSolveRate = newSolvers / newTotalAttempts;
+
       return {
         ...challenge,
-        total_attempts: challenge.total_attempts + 1,
-        solvers: event.success ? challenge.solvers + 1 : challenge.solvers,
+        total_attempts: newTotalAttempts,
+        solvers: newSolvers,
+        solve_rate: newSolveRate,
         solved: user.id === event.user!.id && event.success ? true : challenge.solved,
       };
     })
