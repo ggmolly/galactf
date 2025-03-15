@@ -5,13 +5,16 @@ import App from "./App.tsx";
 import { AuthProvider } from "./providers/auth.provider.tsx";
 import { Toaster } from "./components/ui/sonner.tsx";
 import { ChallengesProvider } from "./providers/challenges.provider.tsx";
+import { WsProvider } from "./providers/ws.provider.tsx";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <AuthProvider>
-      <ChallengesProvider>
-        <App />
-      </ChallengesProvider>
+      <WsProvider>
+        <ChallengesProvider>
+          <App />
+        </ChallengesProvider>
+      </WsProvider>
     </AuthProvider>
     <Toaster position="top-right" richColors className="pointer-events-auto" />
   </StrictMode>
