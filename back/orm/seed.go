@@ -151,8 +151,8 @@ func seedRealChallenges() {
 				},
 			},
 		},
-    {
-      Name:        "quiet riot code",
+		{
+			Name:        "quiet riot code",
 			Difficulty:  3,
 			Categories:  []string{"stegano"},
 			Description: "Quiet Riot Code (version 4) allows covert communication by embedding messages in ordinary digital activity, making them indistinguishable from routine data.",
@@ -162,7 +162,9 @@ func seedRealChallenges() {
 					Title: "intercepted_data_extraction.txt",
 					Size:  0,
 					URL:   "/factories/quiet_riot_code",
-    },
+				},
+			},
+		},
 		{
 			Name:        "just a moment...",
 			Description: "We developed a new ultra secure WAF anti-bot system. But some users were reporting a performance issue.. is V8 too slow?",
