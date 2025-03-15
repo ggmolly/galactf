@@ -23,9 +23,13 @@ const WsContext = createContext<WsContextType | undefined>(undefined);
 export const WsProvider: React.FC<WsProviderProps> = ({ children }) => {
   const wsRef = useRef<WebSocket | null>(null);
   const [reconnectDelay, setReconnectDelay] = useState(1000);
-
-  const { setChallenges } = useChallenges();
+  const { challenges, setChallenges } = useChallenges();
   const { user } = useAuth();
+
+  const challengesRef = useRef(challenges);
+  useEffect(() => {
+    challengesRef.current = challenges;
+  }, [challenges]);
 
   useEffect(() => {
     if (!user.id) {
@@ -45,6 +49,7 @@ export const WsProvider: React.FC<WsProviderProps> = ({ children }) => {
         console.log("[ws] registering event handlers...");
         clearEventHandlers();
         registerEventHandler(WS_CHALLENGE_ATTEMPT, handleChalAttempt, ChallengeAttempt.decode, {
+          challenges: challengesRef,
           setChallenges,
           user,
         });
@@ -52,7 +57,7 @@ export const WsProvider: React.FC<WsProviderProps> = ({ children }) => {
 
       ws.onclose = (event) => {
         console.warn("[ws] disconnected:", event);
-        let nextDelay = event.wasClean ? 1000 : Math.min(reconnectDelay + 1000, 10000);
+        const nextDelay = event.wasClean ? 1000 : Math.min(reconnectDelay + 1000, 10000);
         setReconnectDelay(nextDelay);
         console.log(`[ws] reconnecting in ${nextDelay / 1000} seconds...`);
         reconnectTimeout = setTimeout(connectWebSocket, nextDelay);

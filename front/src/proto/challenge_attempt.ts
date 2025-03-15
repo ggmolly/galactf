@@ -13,11 +13,12 @@ export const protobufPackage = "galactf";
 export interface ChallengeAttempt {
   user: User | undefined;
   challengeId: number;
-  success: boolean;
+  success?: boolean | undefined;
+  firstBlood?: boolean | undefined;
 }
 
 function createBaseChallengeAttempt(): ChallengeAttempt {
-  return { user: undefined, challengeId: 0, success: false };
+  return { user: undefined, challengeId: 0, success: undefined, firstBlood: undefined };
 }
 
 export const ChallengeAttempt: MessageFns<ChallengeAttempt> = {
@@ -28,8 +29,11 @@ export const ChallengeAttempt: MessageFns<ChallengeAttempt> = {
     if (message.challengeId !== 0) {
       writer.uint32(16).uint64(message.challengeId);
     }
-    if (message.success !== false) {
+    if (message.success !== undefined) {
       writer.uint32(24).bool(message.success);
+    }
+    if (message.firstBlood !== undefined) {
+      writer.uint32(32).bool(message.firstBlood);
     }
     return writer;
   },
@@ -65,6 +69,14 @@ export const ChallengeAttempt: MessageFns<ChallengeAttempt> = {
           message.success = reader.bool();
           continue;
         }
+        case 4: {
+          if (tag !== 32) {
+            break;
+          }
+
+          message.firstBlood = reader.bool();
+          continue;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -78,7 +90,8 @@ export const ChallengeAttempt: MessageFns<ChallengeAttempt> = {
     return {
       user: isSet(object.user) ? User.fromJSON(object.user) : undefined,
       challengeId: isSet(object.challengeId) ? globalThis.Number(object.challengeId) : 0,
-      success: isSet(object.success) ? globalThis.Boolean(object.success) : false,
+      success: isSet(object.success) ? globalThis.Boolean(object.success) : undefined,
+      firstBlood: isSet(object.firstBlood) ? globalThis.Boolean(object.firstBlood) : undefined,
     };
   },
 
@@ -90,8 +103,11 @@ export const ChallengeAttempt: MessageFns<ChallengeAttempt> = {
     if (message.challengeId !== 0) {
       obj.challengeId = Math.round(message.challengeId);
     }
-    if (message.success !== false) {
+    if (message.success !== undefined) {
       obj.success = message.success;
+    }
+    if (message.firstBlood !== undefined) {
+      obj.firstBlood = message.firstBlood;
     }
     return obj;
   },
@@ -103,7 +119,8 @@ export const ChallengeAttempt: MessageFns<ChallengeAttempt> = {
     const message = createBaseChallengeAttempt();
     message.user = (object.user !== undefined && object.user !== null) ? User.fromPartial(object.user) : undefined;
     message.challengeId = object.challengeId ?? 0;
-    message.success = object.success ?? false;
+    message.success = object.success ?? undefined;
+    message.firstBlood = object.firstBlood ?? undefined;
     return message;
   },
 };

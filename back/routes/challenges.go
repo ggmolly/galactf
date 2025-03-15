@@ -10,6 +10,7 @@ import (
 	protobuf "github.com/ggmolly/galactf/proto"
 	"github.com/ggmolly/galactf/utils"
 	"github.com/gofiber/fiber/v2"
+	"google.golang.org/protobuf/proto"
 )
 
 func GetChallenges(c *fiber.Ctx) error {
@@ -85,13 +86,30 @@ func SubmitFlag(c *fiber.Ctx) error {
 		return utils.RestStatusFactory(c, fiber.StatusInternalServerError, "Failed to submit flag")
 	}
 
+	var firstBlood bool
+	var solveCount int64
+	if err := orm.GormDB.
+		Model(&orm.Attempt{}).
+		Where("challenge_id = ? AND success = true", chal.ID).
+		Count(&solveCount).
+		Error; err == nil && solveCount > 0 { // silently ignore error
+		firstBlood = true
+	}
+
 	// Broadcast the solve event to all connected clients
 	event := protobuf.ChallengeAttempt{
 		User: &protobuf.User{
 			Id: user.ID,
 		},
 		ChallengeId: chal.ID,
-		Success:     isValid,
+		Success:     proto.Bool(isValid),
+		FirstBlood:  proto.Bool(firstBlood),
+	}
+
+	// serialize the user name if their attempt is a first blood so the client
+	// can display a toast message
+	if firstBlood {
+		event.User.Name = &user.Name
 	}
 
 	Broadcast(protobuf.WS_CHALLENGE_ATTEMPT, &event)
