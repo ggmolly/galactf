@@ -10,6 +10,7 @@ import (
 	"github.com/ggmolly/galactf/middlewares"
 	"github.com/ggmolly/galactf/orm"
 	"github.com/ggmolly/galactf/routes"
+	"github.com/gofiber/contrib/websocket"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
@@ -71,7 +72,9 @@ func main() {
 
 	apiGroup := app.Group("/api/v1")
 	{
-		authGroup := apiGroup.Group("/auth")
+		apiGroup.Get("/ws", middlewares.DummyAuthMiddleware, middlewares.WsUpgradeMiddleware, websocket.New(routes.WsHandler))
+
+		authGroup := apiGroup.Group("/auth", middlewares.DummyAuthMiddleware)
 		{
 			authGroup.Get("/me", routes.GetUser)
 		}

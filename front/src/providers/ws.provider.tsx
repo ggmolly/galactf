@@ -12,7 +12,7 @@ interface WsProviderProps {
 }
 
 interface WsContextType {
-  ws: WebSocket;
+  ws: WebSocket | null;
 }
 
 const WsContext = createContext<WsContextType | undefined>(undefined);
@@ -22,11 +22,15 @@ export const WsProvider: React.FC<WsProviderProps> = ({ children }) => {
   const [reconnectDelay, setReconnectDelay] = useState(1000);
 
   useEffect(() => {
+    let reconnectTimeout: NodeJS.Timeout;
+
     const connectWebSocket = () => {
       console.log("[ws] attempting to establish connection...");
-      const scheme = window.location.protocol === "https:" ? "wss" : "ws";
+      const scheme = import.meta.env.VITE_API_URL.startsWith("https")
+        ? "wss"
+        : "ws";
       const ws = new WebSocket(
-        `${scheme}://${window.location.hostname}:${window.location.port}/api/v1/ws`
+        `${scheme}://${import.meta.env.VITE_API_URL.split("://")[1]}/ws`
       );
 
       ws.onopen = () => {
@@ -36,10 +40,15 @@ export const WsProvider: React.FC<WsProviderProps> = ({ children }) => {
 
       ws.onclose = (event) => {
         console.warn("[ws] disconnected:", event);
-        const nextDelay = Math.min(reconnectDelay + 1000, 10000);
+        let nextDelay = reconnectDelay;
+        if (event.wasClean) {
+          nextDelay = 1000; // Reduce delay for clean closes
+        } else {
+          nextDelay = Math.min(reconnectDelay + 1000, 10000);
+        }
         setReconnectDelay(nextDelay);
         console.log(`[ws] reconnecting in ${nextDelay / 1000} seconds...`);
-        setTimeout(connectWebSocket, nextDelay);
+        reconnectTimeout = setTimeout(connectWebSocket, nextDelay);
       };
 
       ws.onerror = (err) => {
@@ -59,12 +68,14 @@ export const WsProvider: React.FC<WsProviderProps> = ({ children }) => {
       if (wsRef.current) {
         console.log("[ws] cleaning up connection...");
         wsRef.current.close();
+        wsRef.current = null;
       }
+      clearTimeout(reconnectTimeout);
     };
-  }, [reconnectDelay]);
+  }, []);
 
   return (
-    <WsContext.Provider value={{ ws: wsRef.current! }}>
+    <WsContext.Provider value={{ ws: wsRef.current }}>
       {children}
     </WsContext.Provider>
   );
