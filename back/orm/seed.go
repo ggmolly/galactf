@@ -36,7 +36,7 @@ func seedRealChallenges() {
 		{
 			Name:        "super elite encryption",
 			Difficulty:  0,
-			Categories:  []string{"crypto"},
+			Categories:  []string{"stegano"},
 			Description: "This time we found a better encryption algorithm. There is no way someone could break this one.",
 			Attachments: []Attachment{
 				{
@@ -151,6 +151,18 @@ func seedRealChallenges() {
 				},
 			},
 		},
+    {
+      Name:        "quiet riot code",
+			Difficulty:  3,
+			Categories:  []string{"stegano"},
+			Description: "Quiet Riot Code (version 4) allows covert communication by embedding messages in ordinary digital activity, making them indistinguishable from routine data.",
+			Attachments: []Attachment{
+				{
+					Type:  "url",
+					Title: "intercepted_data_extraction.txt",
+					Size:  0,
+					URL:   "/factories/quiet_riot_code",
+    },
 		{
 			Name:        "just a moment...",
 			Description: "We developed a new ultra secure WAF anti-bot system. But some users were reporting a performance issue.. is V8 too slow?",
