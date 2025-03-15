@@ -62,16 +62,16 @@ func seedRealChallenges() {
 			},
 		},
 		{
-			Name:        "exclusive club",
+			Name:        "cookie monster",
+			Description: "Cookies are the most important part of the internet, everyone uses them, but a lot of developers don't know how to use them properly.",
 			Difficulty:  1,
-			Categories:  []string{"crypto", "reverse"},
-			Description: "Some say good security needs multiple layers. Others believe in minimalism. Here, we went all in on minimalism.",
+			Categories:  []string{"web", "pwn"},
 			Attachments: []Attachment{
 				{
 					Type:  "url",
-					Title: "uber-secure encrypted file reader",
+					Title: "secure webpage",
 					Size:  0,
-					URL:   "/factories/one_trick",
+					URL:   "/factories/cookie_monster",
 				},
 			},
 		},
@@ -134,6 +134,20 @@ func seedRealChallenges() {
 					Title: "(un)secure notes",
 					Size:  0,
 					URL:   "/factories/unsecure_notes",
+				},
+			},
+		},
+		{
+			Name:        "exclusive club",
+			Difficulty:  2,
+			Categories:  []string{"crypto", "reverse"},
+			Description: "Some say good security needs multiple layers. Others believe in minimalism. Here, we went all in on minimalism.",
+			Attachments: []Attachment{
+				{
+					Type:  "url",
+					Title: "uber-secure encrypted file reader",
+					Size:  0,
+					URL:   "/factories/one_trick",
 				},
 			},
 		},
