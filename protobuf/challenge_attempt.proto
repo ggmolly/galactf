@@ -7,5 +7,6 @@ import "user.proto";
 message ChallengeAttempt {
     User user = 1;
     uint64 challenge_id = 2;
-    bool success = 3;
+    optional bool success = 3;
+    optional bool first_blood = 4;
 }
