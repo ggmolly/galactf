@@ -62,8 +62,6 @@ func ProxyFactory(containerName, baseURL, prettyChalName string) fiber.Handler {
 		c.Request().Header.Set("X-GalaCTF-Flag", flag)
 		c.Request().Header.Set("X-Root-Uri", "/api/v1/factories/"+containerName)
 
-		fmt.Println("proxying : ", containerName)
-
 		// Just forward the request to the corresponding container
 		return proxy.DoTimeout(c, remotePath, time.Second*5)
 	}
