@@ -35,6 +35,10 @@ var (
 			"dev":  {Hostname: "127.0.0.1", Port: 10003},
 			"prod": {Hostname: "cookie_monster", Port: 8080},
 		},
+		"cookie_monster_squared": {
+			"dev":  {Hostname: "127.0.0.1", Port: 10004},
+			"prod": {Hostname: "cookie_monster_squared", Port: 8080},
+		},
 	}
 )
 
@@ -57,6 +61,8 @@ func ProxyFactory(containerName, baseURL, prettyChalName string) fiber.Handler {
 		c.Request().Header.Set("X-User-ID", fmt.Sprint(user.ID))
 		c.Request().Header.Set("X-GalaCTF-Flag", flag)
 		c.Request().Header.Set("X-Root-Uri", "/api/v1/factories/"+containerName)
+
+		fmt.Println("proxying : ", containerName)
 
 		// Just forward the request to the corresponding container
 		return proxy.DoTimeout(c, remotePath, time.Second*5)

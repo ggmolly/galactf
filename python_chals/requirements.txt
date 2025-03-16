@@ -3,3 +3,4 @@ starlette
 jinja2
 python-multipart
 slowapi
+pyjwt
