@@ -14,11 +14,17 @@ JWT_WEAK_SECRET = 'undefined'
 @app.route("/", methods=["GET", "POST"])
 async def index(request: Request):
     privileges = request.cookies.get("privileges")
+    error = "You must be an admin to get the flag."
+    decoded_privileges = {"isAdmin": False}
     try:
         decoded_privileges = jwt.decode(privileges, JWT_WEAK_SECRET, algorithms=["HS256"])
-    except Exception as e:
-        decoded_privileges = {"isAdmin": "false"}
-    is_admin = decoded_privileges.get("isAdmin") == "true"
+    except jwt.exceptions.InvalidSignatureError:
+        error = "jwt error: Invalid signature"
+    except jwt.exceptions.InvalidAlgorithmError:
+        error = "jwt error: Invalid algorithm"
+    except Exception:
+        pass
+    is_admin = decoded_privileges.get("isAdmin") == True
     if request.method == "POST" and is_admin:
         return JSONResponse({"flag": request.headers.get("X-GalaCTF-Flag")})
     template = Template("""
@@ -71,7 +77,7 @@ async def index(request: Request):
                   </form>
                 {% else %}
                   <div class="alert alert-warning" role="alert">
-                    You must be an admin to get the flag.
+                    {{ error }}
                   </div>
                 {% endif %}
               </div>
@@ -96,10 +102,11 @@ async def index(request: Request):
         content=template.render(
             original_url=request.state.original_url,
             is_admin=is_admin,
+            error=error,
         )
     )
     if not privileges or not request.cookies.get("privileges").startswith("ey"):
-        response.set_cookie("privileges", jwt.encode({"isAdmin": "false"}, JWT_WEAK_SECRET, algorithm="HS256"))
+        response.set_cookie("privileges", jwt.encode({"isAdmin": False}, JWT_WEAK_SECRET, algorithm="HS256"))
     return response
 
 if __name__ == "__main__":
