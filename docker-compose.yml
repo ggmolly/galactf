@@ -45,3 +45,11 @@ services:
     restart: unless-stopped
     ports: # TODO: remove this in prod mode
       - "10003:8080"
+  ctf-cookie-monster-squared:
+    container_name: cookie_monster_squared
+    build:
+      context: ./python_chals
+      dockerfile: ./cookie_monster_squared/cookie_monster_squared.dockerfile
+    restart: unless-stopped
+    ports: # TODO: remove this in prod mode
+      - "10004:8080"

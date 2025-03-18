@@ -76,6 +76,20 @@ func seedRealChallenges() {
 			},
 		},
 		{
+			Name:        "cookie monster²",
+			Description: "Cookies are the most important part of the internet, everyone uses them, but a lot of developers don't know how to use them securely.",
+			Difficulty:  3,
+			Categories:  []string{"web", "pwn"},
+			Attachments: []Attachment{
+				{
+					Type:  "url",
+					Title: "secure webpage",
+					Size:  0,
+					URL:   "/factories/cookie_monster_squared",
+				},
+			},
+		},
+		{
 			Name:        "quack",
 			Difficulty:  1,
 			Categories:  []string{"stegano"},
