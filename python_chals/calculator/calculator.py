@@ -1,19 +1,35 @@
+import asyncio
 from starlette.applications import Starlette
 from starlette.responses import JSONResponse, HTMLResponse
 from starlette.requests import Request
 from jinja2 import Template
 from shared_helpers import UserIDMiddleware, OriginalURLMiddleware
 
+blacklisted_words = set(["import","eval","exec","execfile","subprocess","os","sys","time","sleep","input","print","open","read","write","close","exit","for","while","break","continue","pass","return","yield","range"])
 app = Starlette()
 app.add_middleware(UserIDMiddleware)
 app.add_middleware(OriginalURLMiddleware)
+
+async def safe_eval(expression: str):
+    if any(word in expression.lower() for word in blacklisted_words):
+        raise ValueError
+    loop = asyncio.get_running_loop()
+    return await loop.run_in_executor(None, eval, expression)
 
 @app.route("/", methods=["GET", "POST"])
 async def index(request: Request):
     FLAG = request.headers.get("X-GalaCTF-Flag")
     if request.method == "POST":
         data = await request.form()
-        value = eval(f"{data['x']}{data['operator']}{data['y']}")
+        expression = f"{data['x']}{data['operator']}{data['y']}"
+        try:
+            value = await asyncio.wait_for(safe_eval(expression), timeout=1.0)
+        except asyncio.TimeoutError:
+            value = "Timed out"
+        except ValueError:
+            value = "Blocked by WAF"
+        except Exception as e:
+            value = f"Error: {e}"
     else:
         value = ""
     template = Template("""
