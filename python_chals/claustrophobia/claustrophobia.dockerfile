@@ -1,17 +1,20 @@
 FROM python:3.10-alpine3.20
 
 RUN apk add --no-cache shadow bash
-RUN mkdir -p /app
-COPY shared_helpers.py /app/shared_helpers.py
-COPY requirements.txt /app/requirements.txt
+WORKDIR /root
 
-WORKDIR /app
-
+COPY requirements.txt /root/requirements.txt
 RUN pip install -r requirements.txt --no-cache-dir
-COPY ./claustrophobia/claustrophobia.py /app/claustrophobia.py
+
+COPY shared_helpers.py /root/shared_helpers.py
+COPY ./claustrophobia/claustrophobia.py /root/claustrophobia.py
+RUN chmod 700 /root/claustrophobia.py 
 
 RUN echo '$FLAG_PLACEHOLDER' > /flag.txt
-RUN adduser -D -s /bin/sh ctfplayer
+
+RUN adduser -D -s /sbin/nologin ctfplayer
+
+WORKDIR /home/ctfplayer
 RUN mkdir -p /home/ctfplayer/.ssh && \
     echo "ssh-rsa FAKEKEY1234567890" > /home/ctfplayer/.ssh/authorized_keys && \
     mkdir -p /home/ctfplayer/Documents /home/ctfplayer/Downloads /home/ctfplayer/Desktop && \
@@ -25,4 +28,4 @@ RUN mkdir -p /home/ctfplayer/.ssh && \
     chown -R ctfplayer:ctfplayer /home/ctfplayer
 
 
-ENTRYPOINT ["python", "claustrophobia.py"]
+ENTRYPOINT ["python", "/root/claustrophobia.py"]
