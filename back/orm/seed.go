@@ -193,6 +193,20 @@ func seedRealChallenges() {
 				},
 			},
 		},
+		{
+			Name:        "calculator",
+			Description: "Our company worked on a calculator that runs server side for blazing fast performaces on our 64 core quantum computer. Feel free to try it out!",
+			Difficulty:  4,
+			Categories:  []string{"web", "pwn"},
+			Attachments: []Attachment{
+				{
+					Type:  "url",
+					Title: "calculator",
+					Size:  0,
+					URL:   "/factories/calculator",
+				},
+			},
+		},
 	}
 
 	// Create manually every challenges to skip already existing ones

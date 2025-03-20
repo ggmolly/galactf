@@ -53,3 +53,11 @@ services:
     restart: unless-stopped
     ports: # TODO: remove this in prod mode
       - "10004:8080"
+  ctf-calculator:
+    container_name: calculator
+    build:
+      context: ./python_chals
+      dockerfile: ./calculator/calculator.dockerfile
+    restart: unless-stopped
+    ports: # TODO: remove this in prod mode
+      - "10005:8080"

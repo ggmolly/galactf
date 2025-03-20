@@ -39,6 +39,10 @@ var (
 			"dev":  {Hostname: "127.0.0.1", Port: 10004},
 			"prod": {Hostname: "cookie_monster_squared", Port: 8080},
 		},
+		"calculator": {
+			"dev":  {Hostname: "127.0.0.1", Port: 10005},
+			"prod": {Hostname: "calculator", Port: 8080},
+		},
 	}
 )
 
