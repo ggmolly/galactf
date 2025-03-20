@@ -65,3 +65,11 @@ services:
       resources:
         limits:
           memory: 200M
+  ctf-claustrophobia:
+    container_name: claustrophobia
+    build:
+      context: ./python_chals
+      dockerfile: ./claustrophobia/claustrophobia.dockerfile
+    restart: unless-stopped
+    ports: # TODO: remove this in prod mode
+      - "10005:8080"

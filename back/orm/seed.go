@@ -90,6 +90,20 @@ func seedRealChallenges() {
 			},
 		},
 		{
+			Name:        "claustrophobia",
+			Description: "Ironically, overcoming claustrophobia often requires thinking outside of the box, even when the fear itself comes from feeling trapped inside one.",
+			Difficulty:  2,
+			Categories:  []string{"web", "pwn"},
+			Attachments: []Attachment{
+				{
+					Type:  "url",
+					Title: "File explorer",
+					Size:  0,
+					URL:   "/factories/claustrophobia",
+				},
+			},
+		},
+		{
 			Name:        "quack",
 			Difficulty:  1,
 			Categories:  []string{"stegano"},
