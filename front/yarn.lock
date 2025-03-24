@@ -1011,6 +1011,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@rollup/rollup-linux-x64-musl@npm:^4.37.0":
+  version: 4.37.0
+  resolution: "@rollup/rollup-linux-x64-musl@npm:4.37.0"
+  conditions: os=linux & cpu=x64 & libc=musl
+  languageName: node
+  linkType: hard
+
 "@rollup/rollup-win32-arm64-msvc@npm:4.34.9":
   version: 4.34.9
   resolution: "@rollup/rollup-win32-arm64-msvc@npm:4.34.9"
@@ -2209,6 +2216,7 @@ __metadata:
     "@eslint/js": "npm:^9.21.0"
     "@radix-ui/react-dialog": "npm:^1.1.6"
     "@radix-ui/react-slot": "npm:^1.1.2"
+    "@rollup/rollup-linux-x64-musl": "npm:^4.37.0"
     "@tailwindcss/vite": "npm:^4.0.9"
     "@types/node": "npm:^22.13.9"
     "@types/react": "npm:^19.0.10"
@@ -2233,6 +2241,9 @@ __metadata:
     typescript: "npm:~5.7.2"
     typescript-eslint: "npm:^8.24.1"
     vite: "npm:^6.2.0"
+  dependenciesMeta:
+    "@rollup/rollup-linux-x64-musl":
+      optional: true
   languageName: unknown
   linkType: soft
 
