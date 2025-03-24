@@ -1,4 +1,4 @@
-import { Challenge } from "@/interfaces/challenge.interface";
+import { ChallengeWithSolveRate } from "@/interfaces/challenge.interface";
 import {
   Dialog,
   DialogContent,
@@ -30,16 +30,12 @@ import { useAuth } from "@/providers/auth.provider";
 
 const flagRegex = /^GALA{[A-Za-z0-9_-]{24,48}}$/;
 export interface ChallengeModalProps {
-  challenge: Challenge;
+  challenge: ChallengeWithSolveRate;
   onClose: () => void;
   open: boolean;
 }
 
-export default function ChallengeModal({
-  challenge,
-  open,
-  onClose,
-}: ChallengeModalProps) {
+export default function ChallengeModal({ challenge, open, onClose }: ChallengeModalProps) {
   const [solvers, setSolvers] = useState<Attempt[] | undefined>(undefined);
   const [flag, setFlag] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState<boolean>(false);
@@ -135,17 +131,12 @@ export default function ChallengeModal({
               <span>Solvers ({solvers?.length ?? 0}):</span>
               <div className="flex flex-wrap gap-2 items-center">
                 {solvers.map((solver, i) => (
-                  <span
-                    key={i}
-                    className={cn("font-bold", user.id === solver.user.id)}
-                  >
+                  <span key={i} className={cn("font-bold", user.id === solver.user.id)}>
                     {solver.user.name + (i === solvers.length - 1 ? "" : ", ")}
                   </span>
                 ))}
 
-                {solvers.length === 0 && (
-                  <span className="font-bold">Nobody</span>
-                )}
+                {solvers.length === 0 && <span className="font-bold">Nobody</span>}
               </div>
             </div>
           )}
@@ -153,9 +144,7 @@ export default function ChallengeModal({
         {challenge?.attachments.length > 0 && (
           <>
             <hr />
-            <span className="text-sm">
-              Attachments ({challenge?.attachments.length}):
-            </span>
+            <span className="text-sm">Attachments ({challenge?.attachments.length}):</span>
             <div className="flex flex-col">
               {challenge?.attachments.map((attachment, i) => (
                 <div key={i} className="flex gap-x-2 items-center">
@@ -189,9 +178,7 @@ export default function ChallengeModal({
           <Input
             minLength={0}
             maxLength={255}
-            placeholder={
-              challenge.solved ? "You've solved this challenge!" : "GALA{...}"
-            }
+            placeholder={challenge.solved ? "You've solved this challenge!" : "GALA{...}"}
             className="w-full"
             value={flag ?? ""}
             onChange={(e) => setFlag(e.target.value)}
@@ -200,18 +187,10 @@ export default function ChallengeModal({
           <Button
             variant="outline"
             onClick={submitFlag}
-            disabled={
-              (flag !== null && !flag.match(flagRegex)) ||
-              submitting ||
-              challenge.solved
-            }
+            disabled={(flag !== null && !flag.match(flagRegex)) || submitting || challenge.solved}
           >
             <FlagIcon className="mr-2 h-4 w-4" />
-            {challenge.solved
-              ? "Solved"
-              : submitting
-              ? "Submitting..."
-              : "Submit"}
+            {challenge.solved ? "Solved" : submitting ? "Submitting..." : "Submit"}
           </Button>
         </DialogFooter>
       </DialogContent>
