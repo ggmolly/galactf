@@ -9,10 +9,6 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-var (
-	agnosticMiddleware func(c *fiber.Ctx) error = nil
-)
-
 func DummyAuthMiddleware(c *fiber.Ctx) error {
 	var user orm.User
 	if err := orm.GormDB.First(&user).Error; err != nil {
@@ -31,15 +27,18 @@ func GaladrimAuthMiddleware(c *fiber.Ctx) error {
 	return c.Next()
 }
 
-func EnvAuthMiddleware(c *fiber.Ctx) func(c *fiber.Ctx) error {
-	if agnosticMiddleware == nil && os.Getenv("MODE") == "dev" {
-		agnosticMiddleware = DummyAuthMiddleware
-	} else if agnosticMiddleware == nil && os.Getenv("MODE") == "prod" {
-		agnosticMiddleware = GaladrimAuthMiddleware
+func AgnosticAuthMiddleware() func(c *fiber.Ctx) error {
+	if os.Getenv("MODE") == "dev" {
+		log.Println("[!] using dummy auth middleware in dev mode")
+		return DummyAuthMiddleware
+	} else if os.Getenv("MODE") == "prod" {
+		log.Println("[!] using galadrim auth middleware in prod mode")
+		return GaladrimAuthMiddleware
 	} else {
 		log.Fatal("invalid mode:", os.Getenv("MODE"))
 	}
-	return agnosticMiddleware
+	// dead code
+	return DummyAuthMiddleware
 }
 
 func ReadUser(c *fiber.Ctx) *orm.User {
