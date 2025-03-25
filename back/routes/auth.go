@@ -7,9 +7,8 @@ import (
 )
 
 func GetUser(c *fiber.Ctx) error {
-	// TODO: Implement auth middleware
-	var user orm.User
-	if err := orm.GormDB.First(&user).Error; err != nil {
+	user, ok := c.Locals("user").(*orm.User)
+	if !ok {
 		return utils.RestStatusFactory(c, fiber.StatusUnauthorized, "failed to authenticate user")
 	}
 	return utils.RestStatusFactoryData(c, fiber.StatusOK, user, "")
