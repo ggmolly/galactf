@@ -72,4 +72,4 @@ services:
       dockerfile: ./claustrophobia/claustrophobia.dockerfile
     restart: unless-stopped
     ports: # TODO: remove this in prod mode
-      - "10005:8080"
+      - "10006:8080"
