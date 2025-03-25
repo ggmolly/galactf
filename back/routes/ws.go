@@ -6,7 +6,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/cespare/xxhash"
+	"github.com/cespare/xxhash/v2"
 	"github.com/ggmolly/galactf/orm"
 	"github.com/gofiber/contrib/websocket"
 	"google.golang.org/protobuf/proto"
