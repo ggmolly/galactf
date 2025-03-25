@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/bytedance/sonic"
+	"github.com/ggmolly/galactf/cache"
 	"github.com/ggmolly/galactf/factories"
 	"github.com/ggmolly/galactf/middlewares"
 	"github.com/ggmolly/galactf/orm"
@@ -31,6 +32,7 @@ func init() {
 	}
 
 	orm.InitDatabase()
+	cache.InitRedisClient()
 
 	if len(os.Args) > 1 && os.Args[1] == "seed" {
 		orm.Seed()
@@ -70,25 +72,27 @@ func main() {
 		},
 	}))
 
+	authMiddleware := middlewares.AgnosticAuthMiddleware()
+
 	apiGroup := app.Group("/api/v1")
 	{
-		apiGroup.Get("/ws", middlewares.DummyAuthMiddleware, middlewares.WsUpgradeMiddleware, websocket.New(routes.WsHandler))
+		apiGroup.Get("/ws", authMiddleware, middlewares.WsUpgradeMiddleware, websocket.New(routes.WsHandler))
 
-		authGroup := apiGroup.Group("/auth", middlewares.DummyAuthMiddleware)
+		authGroup := apiGroup.Group("/auth", authMiddleware)
 		{
 			authGroup.Get("/me", routes.GetUser)
 		}
-		challengesGroup := apiGroup.Group("/challenges", middlewares.DummyAuthMiddleware)
+		challengesGroup := apiGroup.Group("/challenges", authMiddleware)
 		{
 			challengesGroup.Get("/", routes.GetChallenges)
 		}
-		challengeGroup := apiGroup.Group("/challenge/:id", middlewares.DummyAuthMiddleware)
+		challengeGroup := apiGroup.Group("/challenge/:id", authMiddleware)
 		{
 			challengeGroup.Get("/", routes.GetChallenge)
 			challengeGroup.Get("/solvers", routes.GetSolvers)
 			challengeGroup.Post("/submit", routes.SubmitFlag)
 		}
-		factoriesGroup := apiGroup.Group("/factories", middlewares.DummyAuthMiddleware)
+		factoriesGroup := apiGroup.Group("/factories", authMiddleware)
 		{
 			factoriesGroup.Get("/elite_encryption", middlewares.ChallengeUnlockedMiddleware("elite encryption"), factories.GenerateEliteEncryption)
 			factoriesGroup.Get("/super_elite_encryption", middlewares.ChallengeUnlockedMiddleware("super elite encryption"), factories.GenerateSuperEliteEncryption)
