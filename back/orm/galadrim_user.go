@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"crypto/aes"
 	"crypto/cipher"
-	"encoding/binary"
 	"encoding/hex"
 	"errors"
 	"log"
@@ -15,7 +14,6 @@ import (
 	"unicode/utf8"
 
 	"github.com/bytedance/sonic"
-	"github.com/cespare/xxhash/v2"
 	"github.com/ggmolly/galactf/cache"
 	"github.com/gofiber/fiber/v2"
 	"github.com/redis/go-redis/v9"
@@ -118,12 +116,6 @@ func GetUserFromCookie(c *fiber.Ctx) (*User, error) {
 
 	cookie = strings.Replace(cookie, "%3A", ":", 1)
 
-	// Check if user is cached
-	user, err := ReadGaladrimUser(cookie)
-	if err == nil {
-		return user, nil
-	}
-
 	// Decipher cookie
 	initializationVector := make([]byte, ivSize)
 	var cipheredEmail bytes.Buffer
@@ -162,6 +154,13 @@ func GetUserFromCookie(c *fiber.Ctx) (*User, error) {
 		log.Println("[!] failed to decipher cookie:", err)
 		return nil, ErrCookieReadFailed
 	}
+
+	// Check if user is cached
+	user, err := ReadGaladrimUser(plaintextEmail)
+	if err == nil {
+		return user, nil
+	}
+
 	galaUser, err := getGaladrimUser(plaintextEmail)
 	if err != nil {
 		return nil, err
@@ -173,7 +172,7 @@ func GetUserFromCookie(c *fiber.Ctx) (*User, error) {
 
 	// If the user exists, cache it, and return it
 	if err == nil {
-		cache.WriteInterface(GaladrimUserKeyFactory(cookie), galactfUser, galaUserCacheTTL)
+		cache.WriteInterface(plaintextEmail, galactfUser, galaUserCacheTTL)
 		return &galactfUser, nil
 	}
 
@@ -189,24 +188,13 @@ func GetUserFromCookie(c *fiber.Ctx) (*User, error) {
 		return nil, err
 	}
 
-	cache.WriteInterface(GaladrimUserKeyFactory(cookie), galactfUser, galaUserCacheTTL)
+	cache.WriteInterface(plaintextEmail, galactfUser, galaUserCacheTTL)
 
 	return user, nil
 }
 
-func GaladrimUserKeyFactory(cookie string) string {
-	var builder strings.Builder
-	builder.Grow(8 + cache.HashHexLength)
-	h := xxhash.New()
-	h.Write([]byte(cookie))
-	builder.WriteString("galaUser")
-	builder.WriteString(hex.EncodeToString(binary.BigEndian.AppendUint64(nil, h.Sum64())))
-	return builder.String()
-}
-
-func ReadGaladrimUser(cookie string) (*User, error) {
-	key := GaladrimUserKeyFactory(cookie)
-	b, err := cache.RedisDb.Get(cache.RedisCtx, key).Bytes()
+func ReadGaladrimUser(email string) (*User, error) {
+	b, err := cache.RedisDb.Get(cache.RedisCtx, email).Bytes()
 	if err == redis.Nil {
 		return nil, ErrNotConnected
 	} else if err != nil {
