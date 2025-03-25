@@ -7,9 +7,9 @@ import (
 )
 
 func GetUser(c *fiber.Ctx) error {
-	user, ok := c.Locals("user").(*orm.User)
-	if !ok {
+	if user, ok := c.Locals("user").(*orm.User); ok {
+		return utils.RestStatusFactoryData(c, fiber.StatusOK, user, "")
+	} else {
 		return utils.RestStatusFactory(c, fiber.StatusUnauthorized, "failed to authenticate user")
 	}
-	return utils.RestStatusFactoryData(c, fiber.StatusOK, user, "")
 }
