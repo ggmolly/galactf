@@ -33,6 +33,7 @@ func init() {
 
 	orm.InitDatabase()
 	cache.InitRedisClient()
+	go routes.RevealAgent()
 
 	if len(os.Args) > 1 && os.Args[1] == "seed" {
 		orm.Seed()

@@ -6,6 +6,7 @@ export interface WsEventHandler {
 
 // Event IDs
 export const WS_CHALLENGE_ATTEMPT = 0x01;
+export const WS_CHALLENGE_REVEAL = 0x02;
 
 let handlers: Record<number, WsEventHandler> = {};
 

@@ -1,0 +1,11 @@
+syntax = "proto3";
+package galactf;
+option go_package = "galactf/protobuf";
+
+message Attachment {
+    uint64 id = 1;
+    string type = 2;
+    string url = 3;
+    string filename = 4;
+    uint64 size = 5;
+}

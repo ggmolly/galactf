@@ -8,6 +8,7 @@ import (
 
 	"github.com/cespare/xxhash/v2"
 	"github.com/ggmolly/galactf/orm"
+	protobuf "github.com/ggmolly/galactf/proto"
 	"github.com/gofiber/contrib/websocket"
 	"google.golang.org/protobuf/proto"
 )
@@ -151,4 +152,47 @@ func WsHandler(c *websocket.Conn) {
 	}
 
 	RemoveClient(cid)
+}
+
+func RevealAgent() {
+	var challenges []orm.Challenge
+	if err := orm.GormDB.
+		Preload("Attachments").
+		Order("reveal_at ASC").
+		Where("reveal_at >= ?", time.Now().UTC()).
+		Find(&challenges).Error; err != nil {
+		log.Println("[!] failed to load challenges", err)
+		return
+	}
+
+	for _, c := range challenges {
+		now := time.Now().UTC()
+		delay := c.RevealAt.Sub(now)
+		log.Printf("[#] sleeping for %v before revealing challenge %d [%s]", delay, c.ID, c.Name)
+		go func() {
+			time.Sleep(delay+1*time.Second)
+			attachments := make([]*protobuf.Attachment, len(c.Attachments))
+
+			// Copy from ORM to protobuf
+			for _, a := range c.Attachments {
+				attachments = append(attachments, &protobuf.Attachment{
+					Id:      a.ID,
+					Type:    a.Type,
+					Url:     a.URL,
+					Filename: a.Title,
+					Size:    a.Size,
+				})
+			}
+
+			log.Printf("[#] revealing challenge %d [%s]", c.ID, c.Name)
+			Broadcast(protobuf.WS_CHALLENGE_REVEAL, &protobuf.ChallengeReveal{
+				Id:            c.ID,
+				Name:          c.Name,
+				Difficulty:    int32(c.Difficulty),
+				Categories:    c.Categories,
+				Attachments:   attachments,
+				Description:   c.Description,
+			})
+		}()
+	}
 }

@@ -1,0 +1,14 @@
+syntax = "proto3";
+package galactf;
+option go_package = "galactf/protobuf";
+
+import "attachment.proto";
+
+message ChallengeReveal {
+    uint64 id = 1;
+    string name = 2;
+    int32 difficulty = 3;
+    string description = 4;
+    repeated string categories = 5;
+    repeated Attachment attachments = 6;
+}
