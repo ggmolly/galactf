@@ -44,7 +44,7 @@ var (
 			"prod": {Hostname: "calculator", Port: 8080},
 		},
 		"claustrophobia": {
-			"dev":  {Hostname: "127.0.0.1", Port: 10005},
+			"dev":  {Hostname: "127.0.0.1", Port: 10006},
 			"prod": {Hostname: "claustrophobia", Port: 8080},
 		},
 	}
