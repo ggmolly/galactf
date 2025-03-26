@@ -110,6 +110,7 @@ func SubmitFlag(c *fiber.Ctx) error {
 	// can display a toast message
 	if firstBlood {
 		event.User.Name = &user.Name
+        orm.SendFirstBlood(chal, user)
 	}
 
 	Broadcast(protobuf.WS_CHALLENGE_ATTEMPT, &event)
