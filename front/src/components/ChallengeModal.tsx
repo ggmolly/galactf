@@ -116,7 +116,7 @@ export default function ChallengeModal({ challenge, open, onClose }: ChallengeMo
             <Skeleton className="w-16 h-6" />
           ) : solvers.length > 0 ? (
             <span
-              className={cn("text-destructive-foreground", {
+              className={cn("text-primary", {
                 "font-bold": user.id === solvers[0].user.id,
               })}
             >
@@ -136,7 +136,10 @@ export default function ChallengeModal({ challenge, open, onClose }: ChallengeMo
               <span>Solvers ({solvers?.length ?? 0}):</span>
               <div className="flex flex-wrap gap-2 items-center">
                 {solvers.map((solver, i) => (
-                  <span key={i} className={cn({ "font-bold": user.id === solver.user.id })}>
+                  <span
+                    key={i}
+                    className={cn("text-secondary", { "font-bold": user.id === solver.user.id })}
+                  >
                     {solver.user.name + (i === solvers.length - 1 ? "" : ", ")}
                   </span>
                 ))}
