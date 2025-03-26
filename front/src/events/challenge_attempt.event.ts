@@ -35,7 +35,7 @@ export function handleChalAttempt(
 
   if (event.firstBlood && event.user!.id !== user.id) {
     const chal = challenges.current.find((c) => c.id === event.challengeId);
-    toast.success(`${event.user!.name} got the first blood on ${chal?.name}!`, {
+    toast.info(`${event.user!.name} got the first blood on ${chal?.name}!`, {
       duration: 60000,
       dismissible: true,
     });
