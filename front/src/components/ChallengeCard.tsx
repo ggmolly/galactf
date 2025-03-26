@@ -22,10 +22,8 @@ export function ChallengeCard({ challenge, selectChallenge }: ChallengeCardProps
   return (
     <Card
       className={cn(
-        "w-72 hover:scale-105 transition-all duration-150 hover:shadow-xl cursor-pointer",
-        challenge.solved
-          ? "shadow-emerald-100 shadow-lg border-emerald-100"
-          : "shadow-orange-100 shadow-lg border-orange-100"
+        "w-72 hover:scale-105 transition-all duration-150 cursor-pointer",
+        challenge.solved ? "border-secondary" : null
       )}
       onClick={() => {
         selectChallenge(challenge);
@@ -81,17 +79,15 @@ export function ChallengeCardLocked({ revealIn }: ChallengeCardLockedProps) {
   }, []);
 
   return (
-    <Card className="w-72 shadow-red-100 shadow-lg border-red-100 hover:scale-105 transition-all duration-150 hover:shadow-xl cursor-not-allowed">
+    <Card className="w-72 hover:scale-105 transition-all duration-150 hover:shadow-xl cursor-not-allowed border-primary">
       <CardHeader>
         <CardTitle>
           <div className="flex gap-x-2 justify-between">
-            <div className="flex gap-x-2 ">
-              <LockIcon className="w-4 h-4" />
-              Locked
+            <div className="flex gap-x-2">
+              <LockIcon className="w-4 h-4 text-primary" />
+              <span className="text-primary">Locked</span>
             </div>
-            <span className="text-xs text-muted-foreground">
-              {durationFormat(secondsRemaining)} left
-            </span>
+            <span className="text-xs text-secondary">{durationFormat(secondsRemaining)} left</span>
           </div>
         </CardTitle>
       </CardHeader>

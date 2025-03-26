@@ -3,13 +3,13 @@ import { difficultyColor } from "@/utils/difficultyColor";
 import { Badge } from "./ui/badge";
 
 export interface DifficultyBadgeProps {
-    difficulty: number;
+  difficulty: number;
 }
 
 export function DifficultyBadge({ difficulty }: DifficultyBadgeProps) {
-    return (
-        <Badge className={cn("text-xs", "font-bold", "my-auto", difficultyColor(difficulty))}>
-            {difficulty}/5
-        </Badge>
-    )
+  return (
+    <Badge className={cn("text-xs font-bold my-auto", difficultyColor(difficulty))}>
+      {difficulty}/5
+    </Badge>
+  );
 }
