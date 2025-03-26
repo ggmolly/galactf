@@ -127,7 +127,7 @@ export default function ChallengeModal({ challenge, open, onClose }: ChallengeMo
           )}
         </div>
 
-        <div className="flex flex-wrap items-center mt-1 text-xs">
+        <div className="flex flex-wrap items-center mt-1 text-xs gap-x-2">
           <LightbulbIcon className="mr-2 h-4 w-4 text-secondary" />
           {solvers === undefined ? (
             <SolversSkeleton />
