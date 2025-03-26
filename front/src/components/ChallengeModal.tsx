@@ -109,7 +109,7 @@ export default function ChallengeModal({ challenge, open, onClose }: ChallengeMo
           {challenge?.description ?? "No description available"}
         </DialogDescription>
 
-        <div className="flex flex-wrap items-center mt-1 text-xs gap-2">
+        <div className="flex flex-wrap items-center mt-1 text-sm gap-2">
           <SparklesIcon className="mr-2 h-4 w-4 text-primary" />
           <p>First blood:</p>
           {solvers === undefined ? (
@@ -127,7 +127,7 @@ export default function ChallengeModal({ challenge, open, onClose }: ChallengeMo
           )}
         </div>
 
-        <div className="flex flex-wrap items-center mt-1 text-xs gap-x-2">
+        <div className="flex flex-wrap items-center mt-1 text-sm gap-x-2">
           <LightbulbIcon className="mr-2 h-4 w-4 text-secondary" />
           {solvers === undefined ? (
             <SolversSkeleton />
