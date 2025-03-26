@@ -1,9 +1,15 @@
 package orm
 
 import (
+	"bytes"
 	"errors"
+	"fmt"
+	"log"
+	"net/http"
+	"os"
 	"time"
 
+	"github.com/bytedance/sonic"
 	"github.com/ggmolly/galactf/utils"
 	"github.com/go-faker/faker/v4"
 	"github.com/go-faker/faker/v4/pkg/options"
@@ -145,4 +151,75 @@ func GetFakeChallenges(n uint) []Challenge {
 	faker.FakeData(&chals, options.WithRandomMapAndSliceMinSize(n), options.WithRandomMapAndSliceMaxSize(n))
 	faker.ResetUnique()
 	return chals
+}
+
+type Message struct {
+    Blocks []Block `json:"blocks"`
+}
+
+type TextObject struct {
+    Type string `json:"type"`
+    Text string `json:"text"`
+}
+
+type Block struct {
+    Type string      `json:"type"`
+    Text *TextObject `json:"text,omitempty"`
+}
+
+    func SendFirstBlood(chal *Challenge, solver *User) {
+    solveTime := time.Now().UTC().Sub(chal.RevealAt)
+    hours := int(solveTime.Hours())
+    minutes := int(solveTime.Minutes()) % 60
+    seconds := int(solveTime.Seconds()) % 60
+
+    var solveTimeStr string
+    if hours > 0 {
+        solveTimeStr = fmt.Sprintf("%dh%dm%02d", hours, minutes, seconds)
+    } else {
+        solveTimeStr = fmt.Sprintf("%dm%02d", minutes, seconds)
+    }
+
+    blocks := []Block{
+        {
+            Type: "header",
+            Text: &TextObject{
+                Type: "plain_text",
+                Text: "First Blood!",
+            },
+        },
+        {
+            Type: "section",
+            Text: &TextObject{
+                Type: "mrkdwn",
+                Text: fmt.Sprintf("*%s* a eu le first blood sur *%s* _(%s)_.", solver.Name, chal.Name, solveTimeStr),
+            },
+        },
+    }
+
+    message := Message{
+        Blocks: blocks,
+    }
+
+    messageJson, err := sonic.Marshal(message)
+    if err != nil {
+        log.Printf("[!] Failed to marshal slack message: %v", err)
+        return
+    }
+
+    req, err := http.NewRequest("POST",
+        os.Getenv("SLACK_WEBHOOK_URI"),
+        bytes.NewReader(messageJson))
+    if err != nil {
+        log.Printf("[!] Failed to create HTTP request: %v", err)
+        return
+    }
+    req.Header.Set("Content-Type", "application/json")
+
+    res, err := http.DefaultClient.Do(req)
+    if err != nil {
+        log.Printf("[!] Slack webhook failed to post message: %v", err)
+        return
+    }
+    defer res.Body.Close()
 }
