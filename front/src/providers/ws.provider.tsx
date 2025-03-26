@@ -3,12 +3,15 @@ import {
   clearEventHandlers,
   registerEventHandler,
   WS_CHALLENGE_ATTEMPT,
+  WS_CHALLENGE_REVEAL,
 } from "@/proto/handlers";
 import { createContext, ReactNode, useContext, useEffect, useRef, useState } from "react";
 import { useChallenges } from "./challenges.provider";
 import { ChallengeAttempt } from "@/proto/challenge_attempt";
 import { handleChalAttempt } from "@/events/challenge_attempt.event";
 import { useAuth } from "./auth.provider";
+import { ChallengeReveal } from "@/proto/challenge_reveal";
+import { handleChalReveal } from "@/events/challenge_reveal.event";
 
 interface WsProviderProps {
   children: ReactNode;
@@ -48,10 +51,18 @@ export const WsProvider: React.FC<WsProviderProps> = ({ children }) => {
         setReconnectDelay(1000);
         console.log("[ws] registering event handlers...");
         clearEventHandlers();
+
+        // Challenge attempt event
         registerEventHandler(WS_CHALLENGE_ATTEMPT, handleChalAttempt, ChallengeAttempt.decode, {
           challenges: challengesRef,
           setChallenges,
           user,
+        });
+
+        // Challenge reveal event
+        registerEventHandler(WS_CHALLENGE_REVEAL, handleChalReveal, ChallengeReveal.decode, {
+          challenges: challengesRef,
+          setChallenges,
         });
       };
 
