@@ -110,12 +110,16 @@ export default function ChallengeModal({ challenge, open, onClose }: ChallengeMo
         </DialogDescription>
 
         <div className="flex flex-wrap items-center mt-1 text-xs gap-2">
-          <SparklesIcon className="mr-2 h-4 w-4 text-destructive-foreground" />
+          <SparklesIcon className="mr-2 h-4 w-4 text-primary" />
           <p>First blood:</p>
           {solvers === undefined ? (
             <Skeleton className="w-16 h-6" />
           ) : solvers.length > 0 ? (
-            <span className={cn("text-destructive-foreground",{ "font-bold": user.id === solvers[0].user.id })}>
+            <span
+              className={cn("text-destructive-foreground", {
+                "font-bold": user.id === solvers[0].user.id,
+              })}
+            >
               {solvers[0].user.name}
             </span>
           ) : (
@@ -124,7 +128,7 @@ export default function ChallengeModal({ challenge, open, onClose }: ChallengeMo
         </div>
 
         <div className="flex flex-wrap items-center mt-1 text-xs">
-          <LightbulbIcon className="mr-2 h-4 w-4" />
+          <LightbulbIcon className="mr-2 h-4 w-4 text-secondary" />
           {solvers === undefined ? (
             <SolversSkeleton />
           ) : (
