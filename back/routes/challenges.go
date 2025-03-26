@@ -92,7 +92,7 @@ func SubmitFlag(c *fiber.Ctx) error {
 		Model(&orm.Attempt{}).
 		Where("challenge_id = ? AND success = true", chal.ID).
 		Count(&solveCount).
-		Error; err == nil && solveCount > 0 { // silently ignore error
+		Error; err == nil && solveCount == 1 { // silently ignore error
 		firstBlood = true
 	}
 
