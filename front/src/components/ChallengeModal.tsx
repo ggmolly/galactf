@@ -109,13 +109,17 @@ export default function ChallengeModal({ challenge, open, onClose }: ChallengeMo
           {challenge?.description ?? "No description available"}
         </DialogDescription>
 
-        <div className="flex flex-wrap items-center mt-1 text-xs gap-2">
-          <SparklesIcon className="mr-2 h-4 w-4 text-destructive-foreground" />
+        <div className="flex flex-wrap items-center mt-1 text-sm gap-2">
+          <SparklesIcon className="mr-2 h-4 w-4 text-primary" />
           <p>First blood:</p>
           {solvers === undefined ? (
             <Skeleton className="w-16 h-6" />
           ) : solvers.length > 0 ? (
-            <span className={cn("text-destructive-foreground",{ "font-bold": user.id === solvers[0].user.id })}>
+            <span
+              className={cn("text-primary", {
+                "font-bold": user.id === solvers[0].user.id,
+              })}
+            >
               {solvers[0].user.name}
             </span>
           ) : (
@@ -123,8 +127,8 @@ export default function ChallengeModal({ challenge, open, onClose }: ChallengeMo
           )}
         </div>
 
-        <div className="flex flex-wrap items-center mt-1 text-xs">
-          <LightbulbIcon className="mr-2 h-4 w-4" />
+        <div className="flex flex-wrap items-center mt-1 text-sm gap-x-2">
+          <LightbulbIcon className="mr-2 h-4 w-4 text-secondary" />
           {solvers === undefined ? (
             <SolversSkeleton />
           ) : (
@@ -132,7 +136,10 @@ export default function ChallengeModal({ challenge, open, onClose }: ChallengeMo
               <span>Solvers ({solvers?.length ?? 0}):</span>
               <div className="flex flex-wrap gap-2 items-center">
                 {solvers.map((solver, i) => (
-                  <span key={i} className={cn({ "font-bold": user.id === solver.user.id })}>
+                  <span
+                    key={i}
+                    className={cn("text-secondary", { "font-bold": user.id === solver.user.id })}
+                  >
                     {solver.user.name + (i === solvers.length - 1 ? "" : ", ")}
                   </span>
                 ))}
