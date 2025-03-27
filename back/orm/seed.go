@@ -222,6 +222,20 @@ func seedRealChallenges() {
 				},
 			},
 		},
+		{
+			Name:        "twisted mersenne",
+			Description: "Ever wondered why is pseudo-random number generator must NOT be used in cryptography? This challenge will teach you why!\nAlso, the system admin has weak credentials, but he instead heavily relies on his implementation of TOTP (rumored to be a simple random.randint).",
+			Difficulty:  5,
+			Categories:  []string{"crypto", "web", "pwn"},
+			Attachments: []Attachment{
+				{
+					Type:  "url",
+					Title: "milksad admin panel",
+					Size:  0,
+					URL:   "/factories/twisted_mersenne",
+				},
+			},
+		},
 	}
 
 	// Sort by difficulty ascending
