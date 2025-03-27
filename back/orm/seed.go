@@ -5,6 +5,7 @@ import (
 	"math/rand/v2"
 	"os"
 	"reflect"
+	"sort"
 	"time"
 
 	"github.com/go-faker/faker/v4"
@@ -223,10 +224,30 @@ func seedRealChallenges() {
 		},
 	}
 
+	// Sort by difficulty ascending
+	sort.Slice(challenges, func(i, j int) bool {
+		return challenges[i].Difficulty < challenges[j].Difficulty
+	})
+
 	// Create manually every challenges to skip already existing ones
-	for i, challenge := range challenges {
-		challenge.RevealAt = eventStart.Add(time.Duration(24*i) * time.Hour)
-		GormDB.Create(&challenge)
+	var daysOffset int
+	for i := range challenges {
+		challenges[i].RevealAt = eventStart.Add(time.Duration(24*(i+daysOffset)) * time.Hour)
+		// If saturday or sunday, add two or one days
+		if challenges[i].RevealAt.Weekday() == time.Saturday {
+			challenges[i].RevealAt = challenges[i].RevealAt.Add(time.Hour * 48)
+			daysOffset += 2
+		}
+		if challenges[i].RevealAt.Weekday() == time.Sunday {
+			challenges[i].RevealAt = challenges[i].RevealAt.Add(time.Hour * 24)
+			daysOffset += 1
+		}
+		// Closed day on the 21st of April
+		if challenges[i].RevealAt.Day() == 21 {
+			challenges[i].RevealAt = challenges[i].RevealAt.Add(time.Hour * 24)
+			daysOffset += 1
+		}
+		GormDB.Create(&challenges[i])
 	}
 }
 
