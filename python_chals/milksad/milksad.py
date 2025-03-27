@@ -81,7 +81,7 @@ MFA_TEMPLATE   = Template("""<!DOCTYPE html>
             <form action="{{original_url}}/mfa" method="POST">
                 <div class="mb-3">
                     <label for="mfa" class="form-label">MFA Code (rotates ever 30 seconds)</label>
-                    <input type="number" class="form-control" id="mfa" name="mfa" placeholder="Enter 6-digit MFA code" required min="100000" max="999999" step="1" name="mfa">
+                    <input type="number" class="form-control" id="mfa" name="mfa" placeholder="Enter 6-digit MFA code" required min="100000" max="999999" step="1">
                 </div>
                 <div class="d-flex justify-content-between mb-3">
                     <a href="#" class="text-decoration-none small">Forgot password?</a>
