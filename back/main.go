@@ -82,8 +82,9 @@ func main() {
 			if err != nil {
 				log.Printf("[!] Failed to create stacktrace dump file: %s", err.Error())
 				fileFail = true
+			} else {
+				defer f.Close()
 			}
-			defer f.Close()
 
 			buf = buf[:n]
 

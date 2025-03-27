@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"log"
 	"net/http"
-	"os"
 
 	"github.com/bytedance/sonic"
 )
@@ -31,9 +30,7 @@ func SendSlackWebhook(uri string, message *Message) {
         log.Printf("[!] Failed to marshal slack message: %v", err)
         return
     }
-	req, err := http.NewRequest("POST",
-        os.Getenv("SLACK_WEBHOOK_URI"),
-        bytes.NewReader(messageJson))
+	req, err := http.NewRequest("POST", uri, bytes.NewReader(messageJson))
     if err != nil {
         log.Printf("[!] Failed to create HTTP request: %v", err)
         return
