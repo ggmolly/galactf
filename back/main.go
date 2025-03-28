@@ -1,8 +1,10 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
+	"runtime"
 	"strings"
 
 	"github.com/bytedance/sonic"
@@ -11,12 +13,14 @@ import (
 	"github.com/ggmolly/galactf/middlewares"
 	"github.com/ggmolly/galactf/orm"
 	"github.com/ggmolly/galactf/routes"
+	"github.com/ggmolly/galactf/types"
 	"github.com/gofiber/contrib/websocket"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/gofiber/template/html/v2"
+	"github.com/google/uuid"
 	"github.com/joho/godotenv"
 )
 
@@ -68,8 +72,66 @@ func main() {
 	app.Use(recover.New(recover.Config{
 		EnableStackTrace: true,
 		StackTraceHandler: func(c *fiber.Ctx, e interface{}) {
-			// TODO: discord webhook
-			log.Println(e)
+			buf := make([]byte, 1<<16)
+			n := runtime.Stack(buf, true)
+			
+			fileName := uuid.NewString() + ".dmp"
+			fileFail := false
+
+			f, err := os.Create(fileName)
+			if err != nil {
+				log.Printf("[!] Failed to create stacktrace dump file: %s", err.Error())
+				fileFail = true
+			} else {
+				defer f.Close()
+			}
+
+			buf = buf[:n]
+
+			_, err = f.Write(buf)
+			if err != nil {
+				log.Printf("[!] Failed to write stacktrace dump file: %s", err.Error())
+				fileFail = true
+			}
+
+			log.Printf("[!] Panic: %s\n%s", e, buf)
+
+			message := types.Message{
+				Blocks: []types.Block{
+					{
+						Type: "header",
+						Text: &types.Text{
+							Type: "plain_text",
+							Text: ":rotating_light: Panic",
+						},
+					},
+					{
+						Type: "section",
+						Text: &types.Text{
+							Type: "mrkdwn",
+							Text: "Détails: `" + fmt.Sprint(e) + "`",
+						},
+					},
+					{
+						Type: "section",
+						Text: &types.Text{
+							Type: "mrkdwn",
+							Text: "Stacktrace dump: `" + fileName + "`",
+						},
+					},
+					{
+						Type: "section",
+						Text: &types.Text{
+							Type: "mrkdwn",
+							Text: fmt.Sprintf("Flag fileFail: `%v`", fileFail),
+						},
+					},
+				},
+			}
+
+			
+
+			types.SendSlackWebhook(os.Getenv("PANIC_SLACK_WEBHOOK_URI"), &message)
 		},
 	}))
 

@@ -1,15 +1,12 @@
 package orm
 
 import (
-	"bytes"
 	"errors"
 	"fmt"
-	"log"
-	"net/http"
 	"os"
 	"time"
 
-	"github.com/bytedance/sonic"
+	"github.com/ggmolly/galactf/types"
 	"github.com/ggmolly/galactf/utils"
 	"github.com/go-faker/faker/v4"
 	"github.com/go-faker/faker/v4/pkg/options"
@@ -153,21 +150,7 @@ func GetFakeChallenges(n uint) []Challenge {
 	return chals
 }
 
-type Message struct {
-    Blocks []Block `json:"blocks"`
-}
-
-type TextObject struct {
-    Type string `json:"type"`
-    Text string `json:"text"`
-}
-
-type Block struct {
-    Type string      `json:"type"`
-    Text *TextObject `json:"text,omitempty"`
-}
-
-    func SendFirstBlood(chal *Challenge, solver *User) {
+func SendFirstBlood(chal *Challenge, solver *User) {
     solveTime := time.Now().UTC().Sub(chal.RevealAt)
     hours := int(solveTime.Hours())
     minutes := int(solveTime.Minutes()) % 60
@@ -180,46 +163,40 @@ type Block struct {
         solveTimeStr = fmt.Sprintf("%dm%02d", minutes, seconds)
     }
 
-    blocks := []Block{
+    blocks := []types.Block{
         {
             Type: "header",
-            Text: &TextObject{
+            Text: &types.Text{
                 Type: "plain_text",
-                Text: "First Blood!",
+                Text: ":sparkles: First Blood - " + chal.Name,
             },
         },
         {
-            Type: "section",
-            Text: &TextObject{
-                Type: "mrkdwn",
-                Text: fmt.Sprintf("*%s* a eu le first blood sur *%s* _(%s)_.", solver.Name, chal.Name, solveTimeStr),
-            },
+			Type: "section",
+			Fields: []types.Text{
+				{
+					Type: "mrkdwn",
+					Text: "*Galadrimeur*:",
+				},
+				{
+					Type: "mrkdwn",
+					Text: "*Temps*:",
+				},
+				{
+					Type: "plain_text",
+					Text: solver.Name,
+				},
+				{
+					Type: "mrkdwn",
+					Text: fmt.Sprintf("_%s_", solveTimeStr),
+				},
+			},
         },
     }
 
-    message := Message{
+    message := types.Message{
         Blocks: blocks,
     }
 
-    messageJson, err := sonic.Marshal(message)
-    if err != nil {
-        log.Printf("[!] Failed to marshal slack message: %v", err)
-        return
-    }
-
-    req, err := http.NewRequest("POST",
-        os.Getenv("SLACK_WEBHOOK_URI"),
-        bytes.NewReader(messageJson))
-    if err != nil {
-        log.Printf("[!] Failed to create HTTP request: %v", err)
-        return
-    }
-    req.Header.Set("Content-Type", "application/json")
-
-    res, err := http.DefaultClient.Do(req)
-    if err != nil {
-        log.Printf("[!] Slack webhook failed to post message: %v", err)
-        return
-    }
-    defer res.Body.Close()
+	types.SendSlackWebhook(os.Getenv("SLACK_WEBHOOK_URI"), &message)
 }
