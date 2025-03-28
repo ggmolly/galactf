@@ -47,8 +47,13 @@ export const LeaderboardProvider: React.FC<LeaderboardProviderProps> = ({
     apiClient
       .get("/leaderboard")
       .then((res) => {
-          console.log(res.data.data);
-        setSolvers(res.data.data);
+        setSolvers(res.data.data.map((d: any): Solver => ({
+            challengeId: d.challenge_id,
+            user: {
+                id: d.user.id,
+                name: d.user.name,
+            }
+        })));
       })
       .catch((err) => {
         const errorMessage = axiosErrorFactory(err);

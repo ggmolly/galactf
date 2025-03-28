@@ -40,7 +40,7 @@ export function handleChalAttempt(
   if (event.success && eventUser !== undefined) {
       setSolvers((prev) => [...prev, {...event, user: {
           id: eventUser.id,
-          name: eventUser.name ?? "Anonymous",
+          name: eventUser.name!,
       }}]);
   }
 
