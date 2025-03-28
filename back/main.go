@@ -87,6 +87,10 @@ func main() {
 		{
 			challengesGroup.Get("/", routes.GetChallenges)
 		}
+        leaderboardGroup := apiGroup.Group("/leaderboard", authMiddleware)
+        {
+            leaderboardGroup.Get("/", routes.GetLeaderboard)
+        }
 		challengeGroup := apiGroup.Group("/challenge/:id", authMiddleware)
 		{
 			challengeGroup.Get("/", routes.GetChallenge)

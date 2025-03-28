@@ -5,6 +5,7 @@ import App from "./App.tsx";
 import { AuthProvider } from "./providers/auth.provider.tsx";
 import { Toaster } from "./components/ui/sonner.tsx";
 import { ChallengesProvider } from "./providers/challenges.provider.tsx";
+import { LeaderboardProvider } from "./providers/leaderboard.provider.tsx";
 import { WsProvider } from "./providers/ws.provider.tsx";
 import { ThemeProvider } from "./providers/theme.provider.tsx";
 
@@ -13,12 +14,18 @@ createRoot(document.getElementById("root")!).render(
     <ThemeProvider defaultTheme="dark">
       <AuthProvider>
         <ChallengesProvider>
-          <WsProvider>
-            <App />
-          </WsProvider>
+          <LeaderboardProvider>
+            <WsProvider>
+              <App />
+            </WsProvider>
+          </LeaderboardProvider>
         </ChallengesProvider>
       </AuthProvider>
-      <Toaster position="top-right" richColors className="pointer-events-auto" />
+      <Toaster
+        position="top-right"
+        richColors
+        className="pointer-events-auto"
+      />
     </ThemeProvider>
-  </StrictMode>
+  </StrictMode>,
 );
