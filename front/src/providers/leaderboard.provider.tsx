@@ -75,8 +75,6 @@ export const LeaderboardProvider: React.FC<LeaderboardProviderProps> = ({
     loadSolvers();
   }, [user]);
 
-  // ajouter un handle dans le WS pour ajouter un solver s'il y en a un nouveau
-  // il y a un bug si on resoud claustrophobia actuellement (fix apres refresh)
   const givenPointsByChallengeId = useMemo(() => getGivenPointsByChallengeId(challenges), [challenges]);
   const users = useMemo(
     () =>
