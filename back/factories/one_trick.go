@@ -59,7 +59,7 @@ func otKeyGenerator(user *orm.User) []byte {
 }
 
 func RenderOneTrick(c *fiber.Ctx) error {
-	return c.Render("one_trick/index", fiber.Map{})
+	return c.Render("exclusive_club/index", fiber.Map{})
 }
 
 func SubmitOneTrick(c *fiber.Ctx) error {
@@ -71,7 +71,7 @@ func SubmitOneTrick(c *fiber.Ctx) error {
 
 	user := middlewares.ReadUser(c)
 	userKey := otKeyGenerator(user)
-	flag := orm.GenerateFlag(user, "one trick")
+	flag := orm.GenerateFlag(user, "exclusive club")
 	c.Set("Content-Type", "text/plain; charset=utf-8")
 	c.Set("Content-Disposition", "filename=decrypted_secret_journal.txt")
 
