@@ -122,6 +122,7 @@ func main() {
 			factoriesGroup.Group("/cookie_monster", middlewares.ChallengeUnlockedMiddleware("cookie monster"), routes.ProxyFactory("cookie_monster", "/cookie_monster", "cookie monster"))
 			factoriesGroup.Group("/calculator", middlewares.ChallengeUnlockedMiddleware("calculator"), routes.ProxyFactory("calculator", "/calculator", "calculator"))
 			factoriesGroup.Group("/claustrophobia", middlewares.ChallengeUnlockedMiddleware("claustrophobia"), routes.ProxyFactory("claustrophobia", "/claustrophobia", "claustrophobia"))
+			factoriesGroup.Group("/twisted_mersenne", middlewares.ChallengeUnlockedMiddleware("twisted mersenne"), routes.ProxyFactory("twisted_mersenne", "/twisted_mersenne", "twisted mersenne"))
 		}
 	}
 

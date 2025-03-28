@@ -73,3 +73,11 @@ services:
     restart: unless-stopped
     ports: # TODO: remove this in prod mode
       - "10006:8080"
+  ctf-milksad:
+    container_name: milksad
+    build:
+      context: ./python_chals
+      dockerfile: ./milksad/milksad.dockerfile
+    restart: unless-stopped
+    ports: # TODO: remove this in prod mode
+      - "10007:8080"
