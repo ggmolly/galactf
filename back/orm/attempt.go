@@ -19,6 +19,18 @@ type Attempt struct {
 	Challenge Challenge `json:"-" gorm:"foreignKey:ChallengeID" faker:"-"`
 }
 
+func GetAllSolvedAttempts() ([]Attempt, error) {
+	var attempts []Attempt
+	err := GormDB.
+		Preload("User").
+		Where("success = true").
+		Find(&attempts).Error
+	if err != nil {
+		return nil, err
+	}
+	return attempts, nil
+}
+
 func GetSolvedAttempts(challengeId int) ([]Attempt, error) {
 	var attempts []Attempt
 	err := GormDB.

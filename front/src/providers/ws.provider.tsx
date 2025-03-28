@@ -12,6 +12,7 @@ import { handleChalAttempt } from "@/events/challenge_attempt.event";
 import { useAuth } from "./auth.provider";
 import { ChallengeReveal } from "@/proto/challenge_reveal";
 import { handleChalReveal } from "@/events/challenge_reveal.event";
+import { useLeaderboard } from "./leaderboard.provider";
 
 interface WsProviderProps {
   children: ReactNode;
@@ -27,6 +28,7 @@ export const WsProvider: React.FC<WsProviderProps> = ({ children }) => {
   const wsRef = useRef<WebSocket | null>(null);
   const [reconnectDelay, setReconnectDelay] = useState(1000);
   const { challenges, setChallenges } = useChallenges();
+  const { setSolvers } = useLeaderboard();
   const { user } = useAuth();
 
   const challengesRef = useRef(challenges);
@@ -57,6 +59,7 @@ export const WsProvider: React.FC<WsProviderProps> = ({ children }) => {
           challenges: challengesRef,
           setChallenges,
           user,
+          setSolvers
         });
 
         // Challenge reveal event

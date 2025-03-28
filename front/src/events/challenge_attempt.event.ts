@@ -1,6 +1,8 @@
+import { Attempt } from "@/interfaces/attempt.interface";
 import { ChallengeWithSolveRate } from "@/interfaces/challenge.interface";
 import { User } from "@/interfaces/user.interface";
 import { ChallengeAttempt } from "@/proto/challenge_attempt";
+import { Solver } from "@/providers/leaderboard.provider";
 import { toast } from "sonner";
 
 export function handleChalAttempt(
@@ -9,9 +11,10 @@ export function handleChalAttempt(
     challenges: React.RefObject<ChallengeWithSolveRate[]>;
     setChallenges: React.Dispatch<React.SetStateAction<ChallengeWithSolveRate[]>>;
     user: User;
+    setSolvers: React.Dispatch<React.SetStateAction<Solver[]>>;
   }
 ) {
-  const { challenges, setChallenges, user } = parameters;
+  const { challenges, setChallenges, user, setSolvers } = parameters;
 
   setChallenges((prevChallenges) =>
     prevChallenges.map((challenge) => {
@@ -32,6 +35,14 @@ export function handleChalAttempt(
       };
     })
   );
+
+  const eventUser = event.user;
+  if (event.success && eventUser !== undefined) {
+      setSolvers((prev) => [...prev, {...event, user: {
+          id: eventUser.id,
+          name: eventUser.name!,
+      }}]);
+  }
 
   if (event.firstBlood && event.user!.id !== user.id) {
     const chal = challenges.current.find((c) => c.id === event.challengeId);
