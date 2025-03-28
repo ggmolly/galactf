@@ -168,7 +168,7 @@ func seedRealChallenges() {
 		},
 		{
 			Name:        "exclusive club",
-			Difficulty:  2,
+			Difficulty:  3,
 			Categories:  []string{"crypto", "reverse"},
 			Description: "Some say good security needs multiple layers. Others believe in minimalism. Here, we went all in on minimalism.",
 			Attachments: []Attachment{
@@ -176,7 +176,7 @@ func seedRealChallenges() {
 					Type:  "url",
 					Title: "uber-secure encrypted file reader",
 					Size:  0,
-					URL:   "/factories/one_trick",
+					URL:   "/factories/exclusive_club",
 				},
 			},
 		},

@@ -168,12 +168,12 @@ func main() {
 			factoriesGroup.Get("/cat_image", middlewares.ChallengeUnlockedMiddleware("cat image"), factories.GenerateCatImage)
 			factoriesGroup.Get("/quiet_riot_code", middlewares.ChallengeUnlockedMiddleware("quiet riot code"), factories.GenerateQuietRiotCode)
 
-			// "One trick" challenge
-			oneTrickGroup := factoriesGroup.Group("/one_trick")
+			// "Exclusive club" challenge
+			oneTrickGroup := factoriesGroup.Group("/exclusive_club")
 			{
-				oneTrickGroup.Get("/", middlewares.ChallengeUnlockedMiddleware("one trick"), factories.RenderOneTrick)
-				oneTrickGroup.Post("/", middlewares.ChallengeUnlockedMiddleware("one trick"), factories.SubmitOneTrick)
-				oneTrickGroup.Post("/encrypt", middlewares.ChallengeUnlockedMiddleware("one trick"), factories.EncryptOneTrick)
+				oneTrickGroup.Get("/", middlewares.ChallengeUnlockedMiddleware("exclusive club"), factories.RenderOneTrick)
+				oneTrickGroup.Post("/", middlewares.ChallengeUnlockedMiddleware("exclusive club"), factories.SubmitOneTrick)
+				oneTrickGroup.Post("/encrypt", middlewares.ChallengeUnlockedMiddleware("exclusive club"), factories.EncryptOneTrick)
 			}
 
 			// Every proxied challenges, the User ID is passed in 'X-User-ID' header
