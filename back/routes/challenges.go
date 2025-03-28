@@ -106,10 +106,13 @@ func SubmitFlag(c *fiber.Ctx) error {
 		FirstBlood:  proto.Bool(firstBlood),
 	}
 
+	if isValid {
+		event.User.Name = &user.Name
+	}
+
 	// serialize the user name if their attempt is a first blood so the client
 	// can display a toast message
 	if firstBlood {
-		event.User.Name = &user.Name
         orm.SendFirstBlood(chal, user)
 	}
 
