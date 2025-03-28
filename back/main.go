@@ -189,6 +189,7 @@ func main() {
 			factoriesGroup.Group("/calculator", middlewares.ChallengeUnlockedMiddleware("calculator"), routes.ProxyFactory("calculator", "/calculator", "calculator"))
 			factoriesGroup.Group("/claustrophobia", middlewares.ChallengeUnlockedMiddleware("claustrophobia"), routes.ProxyFactory("claustrophobia", "/claustrophobia", "claustrophobia"))
 			factoriesGroup.Group("/twisted_mersenne", middlewares.ChallengeUnlockedMiddleware("twisted mersenne"), routes.ProxyFactory("twisted_mersenne", "/twisted_mersenne", "twisted mersenne"))
+			factoriesGroup.Group("/regex_battle", middlewares.ChallengeUnlockedMiddleware("anti-spirit team"), routes.ProxyFactory("regex_battle", "/regex_battle", "anti-spirit team"))
 		}
 	}
 
