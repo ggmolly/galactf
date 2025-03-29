@@ -3,15 +3,12 @@ package orm
 import (
 	"math/rand/v2"
 	"strings"
-	"time"
 
 	"github.com/ggmolly/galactf/cache"
 )
 
 const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-"
 const flagLength = 32
-const leaderboardCacheKey = "lbd"
-const leaderboardCacheTTL = time.Hour * 3
 
 type Attempt struct {
 	ID          uint64 `json:"id" gorm:"primaryKey" faker:"-"`
@@ -42,7 +39,7 @@ func GetAllSolvedAttempts() ([]Attempt, error) {
 	}
 
 	// Cache the leaderboard
-	cache.WriteInterface(leaderboardCacheKey, attempts, leaderboardCacheTTL)
+	cache.WriteInterface(cache.LeaderboardCacheKey, attempts, cache.LeaderboardCacheTTL)
 	return attempts, nil
 }
 
@@ -123,9 +120,9 @@ func FakeAttempts() []Attempt {
 }
 
 func readCachedLeaderboard() (*[]Attempt, error) {
-	return cache.ReadCached[[]Attempt](leaderboardCacheKey)
+	return cache.ReadCached[[]Attempt](cache.LeaderboardCacheKey)
 }
 
 func InvalidateLeaderboardCache() {
-	cache.InvalidateKey(leaderboardCacheKey)
+	cache.InvalidateKey(cache.LeaderboardCacheKey)
 }

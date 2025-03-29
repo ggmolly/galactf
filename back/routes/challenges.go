@@ -15,9 +15,6 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-const challengesCacheKey = "chal%d"
-const challengesCacheTTL = time.Hour * 3
-
 func GetChallenges(c *fiber.Ctx) error {
 	user := middlewares.ReadUser(c)
 
@@ -33,7 +30,7 @@ func GetChallenges(c *fiber.Ctx) error {
 		status = fiber.StatusInternalServerError
 	}
 
-	cache.WriteInterface(fmt.Sprintf(challengesCacheKey, user.ID), chals, challengesCacheTTL)
+	cache.WriteInterface(fmt.Sprintf(cache.ChallengesCacheKey, user.ID), chals, cache.ChallengesCacheTTL)
 	return utils.RestStatusFactoryData(c, status, chals, "")
 }
 
@@ -141,7 +138,7 @@ func SubmitFlag(c *fiber.Ctx) error {
 }
 
 func readCachedChallenges(userID uint64) ([]orm.ChallengeStats, error) {
-	if result, err := cache.ReadCached[[]orm.ChallengeStats](fmt.Sprintf(challengesCacheKey, userID)); err != nil {
+	if result, err := cache.ReadCached[[]orm.ChallengeStats](fmt.Sprintf(cache.ChallengesCacheKey, userID)); err != nil {
 		return nil, err
 	} else {
 		return *result, nil

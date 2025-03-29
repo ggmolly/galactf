@@ -28,7 +28,6 @@ const (
 	ivSize            = 16
 	ivSizeHex         = ivSize * 2
 	cipheredEmailSize = 64
-	galaUserCacheTTL  = time.Hour * 24 * 30
 )
 
 var (
@@ -171,7 +170,7 @@ func GetUserFromCookie(c *fiber.Ctx) (*User, error) {
 
 	// If the user exists, cache it, and return it
 	if err == nil {
-		cache.WriteInterface(plaintextEmail, galactfUser, galaUserCacheTTL)
+		cache.WriteInterface(plaintextEmail, galactfUser, cache.GalaUserCacheTTL)
 		return &galactfUser, nil
 	}
 
@@ -187,7 +186,7 @@ func GetUserFromCookie(c *fiber.Ctx) (*User, error) {
 		return nil, err
 	}
 
-	cache.WriteInterface(plaintextEmail, galactfUser, galaUserCacheTTL)
+	cache.WriteInterface(plaintextEmail, galactfUser, cache.GalaUserCacheTTL)
 
 	return user, nil
 }

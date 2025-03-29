@@ -3,8 +3,10 @@ package orm
 import (
 	"crypto/rand"
 	"encoding/binary"
+	"fmt"
 	"time"
 
+	"github.com/ggmolly/galactf/cache"
 	"github.com/go-faker/faker/v4"
 	"github.com/go-faker/faker/v4/pkg/options"
 )
@@ -44,4 +46,8 @@ func FakeUsers(n uint) []User {
 
 	faker.ResetUnique()
 	return users
+}
+
+func InvalidateChallengesCache(userID uint64) {
+	cache.InvalidateKey(fmt.Sprintf(cache.ChallengesCacheKey, userID))
 }
