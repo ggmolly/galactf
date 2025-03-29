@@ -5,7 +5,6 @@ import (
 	"log"
 	"time"
 
-	"github.com/bytedance/sonic"
 	"github.com/ggmolly/galactf/cache"
 	"github.com/ggmolly/galactf/dto"
 	"github.com/ggmolly/galactf/middlewares"
@@ -13,7 +12,6 @@ import (
 	protobuf "github.com/ggmolly/galactf/proto"
 	"github.com/ggmolly/galactf/utils"
 	"github.com/gofiber/fiber/v2"
-	"github.com/redis/go-redis/v9"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -143,18 +141,9 @@ func SubmitFlag(c *fiber.Ctx) error {
 }
 
 func readCachedChallenges(userID uint64) ([]orm.ChallengeStats, error) {
-	b, err := cache.RedisDb.Get(cache.RedisCtx, fmt.Sprintf(challengesCacheKey, userID)).Bytes()
-	if err == redis.Nil {
-		return nil, redis.Nil
-	} else if err != nil {
-		log.Println("[!] failed to read challenges from cache:", err)
+	if result, err := cache.ReadCached[[]orm.ChallengeStats](fmt.Sprintf(challengesCacheKey, userID)); err != nil {
 		return nil, err
+	} else {
+		return *result, nil
 	}
-	var chals []orm.ChallengeStats
-	err = sonic.ConfigFastest.Unmarshal(b, &chals)
-	if err != nil {
-		log.Println("[!] failed to unmarshal challenges:", err)
-		return nil, err
-	}
-	return chals, nil
 }

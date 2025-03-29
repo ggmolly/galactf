@@ -16,7 +16,6 @@ import (
 	"github.com/bytedance/sonic"
 	"github.com/ggmolly/galactf/cache"
 	"github.com/gofiber/fiber/v2"
-	"github.com/redis/go-redis/v9"
 )
 
 type GaladrimUser struct {
@@ -194,18 +193,5 @@ func GetUserFromCookie(c *fiber.Ctx) (*User, error) {
 }
 
 func readCachedGaladrimUser(email string) (*User, error) {
-	b, err := cache.RedisDb.Get(cache.RedisCtx, email).Bytes()
-	if err == redis.Nil {
-		return nil, ErrNotConnected
-	} else if err != nil {
-		log.Println("[!] failed to read galadrim user from cache:", err)
-		return nil, err
-	}
-	var user User
-	err = sonic.ConfigFastest.Unmarshal(b, &user)
-	if err != nil {
-		log.Println("[!] failed to unmarshal galadrim user:", err)
-		return nil, err
-	}
-	return &user, nil
+	return cache.ReadCached[User](email)
 }
