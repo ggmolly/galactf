@@ -1,26 +1,41 @@
 package routes
 
 import (
+	"fmt"
 	"log"
 	"time"
 
+	"github.com/bytedance/sonic"
+	"github.com/ggmolly/galactf/cache"
 	"github.com/ggmolly/galactf/dto"
 	"github.com/ggmolly/galactf/middlewares"
 	"github.com/ggmolly/galactf/orm"
 	protobuf "github.com/ggmolly/galactf/proto"
 	"github.com/ggmolly/galactf/utils"
 	"github.com/gofiber/fiber/v2"
+	"github.com/redis/go-redis/v9"
 	"google.golang.org/protobuf/proto"
 )
 
+const challengesCacheKey = "chal%d"
+const challengesCacheTTL = time.Hour * 3
+
 func GetChallenges(c *fiber.Ctx) error {
 	user := middlewares.ReadUser(c)
+
+	cachedChals, err := readCachedChallenges(user.ID)
+	if err == nil {
+		return utils.RestStatusFactoryData(c, fiber.StatusOK, cachedChals, "")
+	}
+
 	chals, err := orm.GetChallengeStats(user.ID)
 	status := fiber.StatusOK
 	if err != nil {
 		log.Printf("[-] error fetching challenges: %s", err.Error())
 		status = fiber.StatusInternalServerError
 	}
+
+	cache.WriteInterface(fmt.Sprintf(challengesCacheKey, user.ID), chals, challengesCacheTTL)
 	return utils.RestStatusFactoryData(c, status, chals, "")
 }
 
@@ -125,4 +140,21 @@ func SubmitFlag(c *fiber.Ctx) error {
 	} else { // Otherwise, return an HTTP 200 (OK) status code
 		return utils.RestStatusFactory(c, fiber.StatusOK, "Congratulations, you've solved the challenge!")
 	}
+}
+
+func readCachedChallenges(userID uint64) ([]orm.ChallengeStats, error) {
+	b, err := cache.RedisDb.Get(cache.RedisCtx, fmt.Sprintf(challengesCacheKey, userID)).Bytes()
+	if err == redis.Nil {
+		return nil, redis.Nil
+	} else if err != nil {
+		log.Println("[!] failed to read challenges from cache:", err)
+		return nil, err
+	}
+	var chals []orm.ChallengeStats
+	err = sonic.ConfigFastest.Unmarshal(b, &chals)
+	if err != nil {
+		log.Println("[!] failed to unmarshal challenges:", err)
+		return nil, err
+	}
+	return chals, nil
 }
