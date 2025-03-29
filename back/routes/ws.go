@@ -39,8 +39,6 @@ func generateClientID(user *orm.User) uint64 {
 }
 
 func RegisterClient(c *websocket.Conn, user *orm.User, cid uint64) {
-	log.Printf("[ws] #%d connected, cid: %d\n", user.ID, cid)
-
 	wsLock.Lock()
 	defer wsLock.Unlock()
 
@@ -52,8 +50,6 @@ func RegisterClient(c *websocket.Conn, user *orm.User, cid uint64) {
 }
 
 func RemoveClient(cid uint64) {
-	log.Printf("[ws] disconnected, cid: %d\n", cid)
-
 	wsLock.Lock()
 	defer wsLock.Unlock()
 	delete(Sockets, cid)
