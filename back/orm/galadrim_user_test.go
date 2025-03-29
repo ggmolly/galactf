@@ -25,7 +25,9 @@ func FuzzTestGetUserFromCookie(f *testing.F) {
 		app := fiber.New()
 		req := app.AcquireCtx(&fasthttp.RequestCtx{})
 		req.Cookies("email-token", cookie)
-		// Test for panics
-		GetUserFromCookie(req)
+		_, err := GetUserFromCookie(req)
+		if err == nil {
+			t.Errorf("Expected error, got nil")
+		}
 	})
 }
