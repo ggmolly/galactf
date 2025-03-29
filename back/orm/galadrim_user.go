@@ -156,7 +156,7 @@ func GetUserFromCookie(c *fiber.Ctx) (*User, error) {
 	}
 
 	// Check if user is cached
-	user, err := ReadGaladrimUser(plaintextEmail)
+	user, err := readCachedGaladrimUser(plaintextEmail)
 	if err == nil {
 		return user, nil
 	}
@@ -193,7 +193,7 @@ func GetUserFromCookie(c *fiber.Ctx) (*User, error) {
 	return user, nil
 }
 
-func ReadGaladrimUser(email string) (*User, error) {
+func readCachedGaladrimUser(email string) (*User, error) {
 	b, err := cache.RedisDb.Get(cache.RedisCtx, email).Bytes()
 	if err == redis.Nil {
 		return nil, ErrNotConnected

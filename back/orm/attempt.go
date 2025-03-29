@@ -1,12 +1,20 @@
 package orm
 
 import (
+	"log"
 	"math/rand/v2"
 	"strings"
+	"time"
+
+	"github.com/bytedance/sonic"
+	"github.com/ggmolly/galactf/cache"
+	"github.com/redis/go-redis/v9"
 )
 
 const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-"
 const flagLength = 32
+const leaderboardCacheKey = "lbd"
+const leaderboardCacheTTL = time.Hour * 3
 
 type Attempt struct {
 	ID          uint64 `json:"id" gorm:"primaryKey" faker:"-"`
@@ -21,13 +29,23 @@ type Attempt struct {
 
 func GetAllSolvedAttempts() ([]Attempt, error) {
 	var attempts []Attempt
-	err := GormDB.
+
+	// Check if we have cached the leaderboard
+	cachedLeaderboard, err := readCachedLeaderboard()
+	if err == nil {
+		return *cachedLeaderboard, nil
+	}
+
+	err = GormDB.
 		Preload("User").
 		Where("success = true").
 		Find(&attempts).Error
 	if err != nil {
 		return nil, err
 	}
+
+	// Cache the leaderboard
+	cache.WriteInterface(leaderboardCacheKey, attempts, leaderboardCacheTTL)
 	return attempts, nil
 }
 
@@ -105,4 +123,25 @@ func FakeAttempts() []Attempt {
 	}
 
 	return attempts
+}
+
+func readCachedLeaderboard() (*[]Attempt, error) {
+	b, err := cache.RedisDb.Get(cache.RedisCtx, leaderboardCacheKey).Bytes()
+	if err == redis.Nil {
+		return nil, ErrNotConnected
+	} else if err != nil {
+		log.Println("[!] failed to read leaderboard from cache:", err)
+		return nil, err
+	}
+	var attempts []Attempt
+	err = sonic.ConfigFastest.Unmarshal(b, &attempts)
+	if err != nil {
+		log.Println("[!] failed to unmarshal leaderboard:", err)
+		return nil, err
+	}
+	return &attempts, nil
+}
+
+func InvalidateLeaderboardCache() {
+	cache.InvalidateKey(leaderboardCacheKey)
 }

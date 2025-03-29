@@ -84,6 +84,8 @@ func SubmitFlag(c *fiber.Ctx) error {
 	}
 	if err := orm.GormDB.Create(attempt).Error; err != nil {
 		return utils.RestStatusFactory(c, fiber.StatusInternalServerError, "Failed to submit flag")
+	} else {
+		orm.InvalidateLeaderboardCache()
 	}
 
 	var firstBlood bool
@@ -113,7 +115,7 @@ func SubmitFlag(c *fiber.Ctx) error {
 	// serialize the user name if their attempt is a first blood so the client
 	// can display a toast message
 	if firstBlood {
-        orm.SendFirstBlood(chal, user)
+		orm.SendFirstBlood(chal, user)
 	}
 
 	Broadcast(protobuf.WS_CHALLENGE_ATTEMPT, &event)
