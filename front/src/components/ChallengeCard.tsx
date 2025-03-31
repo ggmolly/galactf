@@ -16,7 +16,7 @@ interface ChallengeCardProps {
 
 export function ChallengeCard({ challenge, selectChallenge }: ChallengeCardProps) {
   if (!!challenge.reveal_in) {
-    return <ChallengeCardLocked revealAt={new Date(new Date().getTime() + (challenge.reveal_in * 1000))} />;
+    return <ChallengeCardLocked revealIn={challenge.reveal_in} />;
   }
 
   return (
@@ -58,24 +58,22 @@ export function ChallengeCard({ challenge, selectChallenge }: ChallengeCardProps
 }
 
 interface ChallengeCardLockedProps {
-  revealAt: Date;
+  revealIn: number;
 }
 
-export function ChallengeCardLocked({ revealAt }: ChallengeCardLockedProps) {
-  const [secondsRemaining, setSecondsRemaining] = useState<number>(((revealAt.getTime() - new Date().getTime()) / 1000) | 0);
+export function ChallengeCardLocked({ revealIn }: ChallengeCardLockedProps) {
+  const [secondsRemaining, setSecondsRemaining] = useState<number>(revealIn);
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setSecondsRemaining(() => {
-          const revealIn = (revealAt.getTime() - new Date().getTime()) / 1000;
-
-          if (revealIn <= 0) {
-              clearInterval(timer);
-              return 0;
-          }
-          return revealIn | 0;
+      setSecondsRemaining((prevSeconds) => {
+        if (prevSeconds <= 1) {
+          clearInterval(timer);
+          return 0;
+        }
+        return prevSeconds - 1;
       });
-    }, 200);
+    }, 1000);
 
     return () => clearInterval(timer);
   }, []);
@@ -104,7 +102,7 @@ export function ChallengeCardLocked({ revealAt }: ChallengeCardLockedProps) {
         <div className="flex flex-wrap gap-2 mt-2">
           <span className="text-xs text-muted-foreground">
             This challenge is locked until{" "}
-            {revealAt.toLocaleString()}
+            {new Date(Date.now() + secondsRemaining * 1000).toLocaleString()}
           </span>
         </div>
       </CardContent>
