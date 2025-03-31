@@ -1,9 +1,11 @@
 package routes
 
 import (
+	"fmt"
 	"log"
 	"time"
 
+	"github.com/ggmolly/galactf/cache"
 	"github.com/ggmolly/galactf/dto"
 	"github.com/ggmolly/galactf/middlewares"
 	"github.com/ggmolly/galactf/orm"
@@ -15,12 +17,20 @@ import (
 
 func GetChallenges(c *fiber.Ctx) error {
 	user := middlewares.ReadUser(c)
+
+	cachedChals, err := readCachedChallenges(user.ID)
+	if err == nil {
+		return utils.RestStatusFactoryData(c, fiber.StatusOK, cachedChals, "")
+	}
+
 	chals, err := orm.GetChallengeStats(user.ID)
 	status := fiber.StatusOK
 	if err != nil {
 		log.Printf("[-] error fetching challenges: %s", err.Error())
 		status = fiber.StatusInternalServerError
 	}
+
+	cache.WriteInterface(fmt.Sprintf(cache.ChallengesCacheKey, user.ID), chals, cache.ChallengesCacheTTL)
 	return utils.RestStatusFactoryData(c, status, chals, "")
 }
 
@@ -84,6 +94,8 @@ func SubmitFlag(c *fiber.Ctx) error {
 	}
 	if err := orm.GormDB.Create(attempt).Error; err != nil {
 		return utils.RestStatusFactory(c, fiber.StatusInternalServerError, "Failed to submit flag")
+	} else {
+		orm.InvalidateLeaderboardCache()
 	}
 
 	var firstBlood bool
@@ -113,7 +125,7 @@ func SubmitFlag(c *fiber.Ctx) error {
 	// serialize the user name if their attempt is a first blood so the client
 	// can display a toast message
 	if firstBlood {
-        orm.SendFirstBlood(chal, user)
+		orm.SendFirstBlood(chal, user)
 	}
 
 	Broadcast(protobuf.WS_CHALLENGE_ATTEMPT, &event)
@@ -122,5 +134,13 @@ func SubmitFlag(c *fiber.Ctx) error {
 		return utils.RestStatusFactory(c, fiber.StatusCreated, "Invalid flag! Try again.")
 	} else { // Otherwise, return an HTTP 200 (OK) status code
 		return utils.RestStatusFactory(c, fiber.StatusOK, "Congratulations, you've solved the challenge!")
+	}
+}
+
+func readCachedChallenges(userID uint64) ([]orm.ChallengeStats, error) {
+	if result, err := cache.ReadCached[[]orm.ChallengeStats](fmt.Sprintf(cache.ChallengesCacheKey, userID)); err != nil {
+		return nil, err
+	} else {
+		return *result, nil
 	}
 }

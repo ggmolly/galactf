@@ -16,7 +16,6 @@ import (
 	"github.com/bytedance/sonic"
 	"github.com/ggmolly/galactf/cache"
 	"github.com/gofiber/fiber/v2"
-	"github.com/redis/go-redis/v9"
 )
 
 type GaladrimUser struct {
@@ -29,7 +28,6 @@ const (
 	ivSize            = 16
 	ivSizeHex         = ivSize * 2
 	cipheredEmailSize = 64
-	galaUserCacheTTL  = time.Hour * 24 * 30
 )
 
 var (
@@ -156,7 +154,7 @@ func GetUserFromCookie(c *fiber.Ctx) (*User, error) {
 	}
 
 	// Check if user is cached
-	user, err := ReadGaladrimUser(plaintextEmail)
+	user, err := readCachedGaladrimUser(plaintextEmail)
 	if err == nil {
 		return user, nil
 	}
@@ -172,7 +170,7 @@ func GetUserFromCookie(c *fiber.Ctx) (*User, error) {
 
 	// If the user exists, cache it, and return it
 	if err == nil {
-		cache.WriteInterface(plaintextEmail, galactfUser, galaUserCacheTTL)
+		cache.WriteInterface(plaintextEmail, galactfUser, cache.GalaUserCacheTTL)
 		return &galactfUser, nil
 	}
 
@@ -188,24 +186,11 @@ func GetUserFromCookie(c *fiber.Ctx) (*User, error) {
 		return nil, err
 	}
 
-	cache.WriteInterface(plaintextEmail, galactfUser, galaUserCacheTTL)
+	cache.WriteInterface(plaintextEmail, galactfUser, cache.GalaUserCacheTTL)
 
 	return user, nil
 }
 
-func ReadGaladrimUser(email string) (*User, error) {
-	b, err := cache.RedisDb.Get(cache.RedisCtx, email).Bytes()
-	if err == redis.Nil {
-		return nil, ErrNotConnected
-	} else if err != nil {
-		log.Println("[!] failed to read galadrim user from cache:", err)
-		return nil, err
-	}
-	var user User
-	err = sonic.ConfigFastest.Unmarshal(b, &user)
-	if err != nil {
-		log.Println("[!] failed to unmarshal galadrim user:", err)
-		return nil, err
-	}
-	return &user, nil
+func readCachedGaladrimUser(email string) (*User, error) {
+	return cache.ReadCached[User](email)
 }

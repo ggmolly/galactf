@@ -3,6 +3,8 @@ package orm
 import (
 	"math/rand/v2"
 	"strings"
+
+	"github.com/ggmolly/galactf/cache"
 )
 
 const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-"
@@ -21,13 +23,23 @@ type Attempt struct {
 
 func GetAllSolvedAttempts() ([]Attempt, error) {
 	var attempts []Attempt
-	err := GormDB.
+
+	// Check if we have cached the leaderboard
+	cachedLeaderboard, err := readCachedLeaderboard()
+	if err == nil {
+		return *cachedLeaderboard, nil
+	}
+
+	err = GormDB.
 		Preload("User").
 		Where("success = true").
 		Find(&attempts).Error
 	if err != nil {
 		return nil, err
 	}
+
+	// Cache the leaderboard
+	cache.WriteInterface(cache.LeaderboardCacheKey, attempts, cache.LeaderboardCacheTTL)
 	return attempts, nil
 }
 
@@ -105,4 +117,12 @@ func FakeAttempts() []Attempt {
 	}
 
 	return attempts
+}
+
+func readCachedLeaderboard() (*[]Attempt, error) {
+	return cache.ReadCached[[]Attempt](cache.LeaderboardCacheKey)
+}
+
+func InvalidateLeaderboardCache() {
+	cache.InvalidateKey(cache.LeaderboardCacheKey)
 }
