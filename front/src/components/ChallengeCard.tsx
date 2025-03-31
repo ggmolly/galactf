@@ -15,8 +15,8 @@ interface ChallengeCardProps {
 }
 
 export function ChallengeCard({ challenge, selectChallenge }: ChallengeCardProps) {
-  if (!!challenge.reveal_in) {
-    return <ChallengeCardLocked revealIn={challenge.reveal_in} />;
+  if (!!challenge.reveal_at) {
+    return <ChallengeCardLocked revealAt={challenge.reveal_at} />;
   }
 
   return (
@@ -58,11 +58,15 @@ export function ChallengeCard({ challenge, selectChallenge }: ChallengeCardProps
 }
 
 interface ChallengeCardLockedProps {
-  revealIn: number;
+  revealAt: Date;
 }
 
-export function ChallengeCardLocked({ revealIn }: ChallengeCardLockedProps) {
-  const [secondsRemaining, setSecondsRemaining] = useState<number>(revealIn);
+export function ChallengeCardLocked({ revealAt }: ChallengeCardLockedProps) {
+  const computeRemainingSeconds = () => {
+    return (Math.floor((revealAt.getTime() - Date.now()) / 1000) | 0) + 1;
+  };
+
+  const [secondsRemaining, setSecondsRemaining] = useState<number>(computeRemainingSeconds());
 
   useEffect(() => {
     const timer = setInterval(() => {

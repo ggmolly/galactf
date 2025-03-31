@@ -1,11 +1,5 @@
 import { ChallengeWithSolveRate } from "@/interfaces/challenge.interface";
-import {
-  createContext,
-  ReactNode,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+import { createContext, ReactNode, useContext, useEffect, useState } from "react";
 import { useAuth } from "./auth.provider";
 import { apiClient } from "@/lib/axios";
 import { axiosErrorFactory } from "@/utils/errorFactory";
@@ -20,13 +14,9 @@ interface ChallengesContextType {
   setChallenges: (challenges: ChallengeWithSolveRate[]) => void;
 }
 
-const ChallengesContext = createContext<ChallengesContextType | undefined>(
-  undefined
-);
+const ChallengesContext = createContext<ChallengesContextType | undefined>(undefined);
 
-export const ChallengesProvider: React.FC<ChallengesProviderProps> = ({
-  children,
-}) => {
+export const ChallengesProvider: React.FC<ChallengesProviderProps> = ({ children }) => {
   const [challenges, setChallenges] = useState<ChallengeWithSolveRate[]>([]);
 
   const { user } = useAuth();
@@ -35,7 +25,15 @@ export const ChallengesProvider: React.FC<ChallengesProviderProps> = ({
     apiClient
       .get("/challenges")
       .then((res) => {
-        setChallenges(res.data.data);
+        setChallenges(
+          res.data.data.map((challenge: ChallengeWithSolveRate) => {
+            if (!challenge.reveal_in) {
+              return challenge;
+            }
+            challenge.reveal_at = new Date(Date.now() + challenge.reveal_in * 1000);
+            return challenge;
+          })
+        );
       })
       .catch((err) => {
         const errorMessage = axiosErrorFactory(err);
