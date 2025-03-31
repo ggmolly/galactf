@@ -1,6 +1,8 @@
 import asyncio
+import random
+import string
 from starlette.applications import Starlette
-from starlette.responses import JSONResponse, HTMLResponse
+from starlette.responses import HTMLResponse
 from starlette.requests import Request
 from jinja2 import Template
 from shared_helpers import UserIDMiddleware, OriginalURLMiddleware
@@ -10,11 +12,15 @@ app = Starlette()
 app.add_middleware(UserIDMiddleware)
 app.add_middleware(OriginalURLMiddleware)
 
-async def safe_eval(expression: str):
+def random_string(user_id: int, length: int) -> str:
+    rng = random.Random(user_id)
+    return ''.join(rng.choice(string.ascii_letters) for _ in range(length))
+
+async def safe_eval(expression: str, flag: str, user_id: int):
     if any(word in expression.lower() for word in blacklisted_words):
         raise ValueError
     loop = asyncio.get_running_loop()
-    return await loop.run_in_executor(None, eval, expression)
+    return await loop.run_in_executor(None, lambda: eval(expression, {random_string(user_id, 8): lambda: flag}))
 
 @app.route("/", methods=["GET", "POST"])
 async def index(request: Request):
@@ -23,7 +29,7 @@ async def index(request: Request):
         data = await request.form()
         expression = f"{data['x']}{data['operator']}{data['y']}"
         try:
-            value = await asyncio.wait_for(safe_eval(expression), timeout=1.0)
+            value = await asyncio.wait_for(safe_eval(expression, FLAG, int(request.headers.get("X-User-ID", "0"))), timeout=1.0)
         except asyncio.TimeoutError:
             value = "Timed out"
         except ValueError:
