@@ -13,7 +13,8 @@ import (
 )
 
 var (
-	eventStart = time.Date(2025, time.April, 1, 0, 0, 0, 0, time.UTC)
+	loc, _     = time.LoadLocation("Europe/Paris")
+	eventStart = time.Date(2025, time.April, 1, 13, 0, 0, 0, loc)
 )
 
 // Idempotent seeding
