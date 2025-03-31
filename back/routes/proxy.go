@@ -51,6 +51,10 @@ var (
 			"dev":  {Hostname: "127.0.0.1", Port: 10007},
 			"prod": {Hostname: "milksad", Port: 8080},
 		},
+		"regex_battle": {
+			"dev":  {Hostname: "127.0.0.1", Port: 10008},
+			"prod": {Hostname: "ast", Port: 8080},
+		},
 	}
 )
 

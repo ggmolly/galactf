@@ -236,6 +236,20 @@ func seedRealChallenges() {
 				},
 			},
 		},
+		{
+			Name:        "anti-spirit team",
+			Description: "\"AST? Stands for Anti-Spirit Team, right..? Anyway, did you know that the regex for the flags in this CTF is GALA\\{[0-9][a-Z]-_\\}\"",
+			Difficulty:  4,
+			Categories:  []string{"misc", "reverse"},
+			Attachments: []Attachment{
+				{
+					Type:  "url",
+					Title: "regex battle",
+					Size:  0,
+					URL:   "/factories/regex_battle",
+				},
+			},
+		},
 	}
 
 	// Sort by difficulty ascending

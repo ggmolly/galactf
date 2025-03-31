@@ -81,3 +81,16 @@ services:
     restart: unless-stopped
     ports: # TODO: remove this in prod mode
       - "10007:8080"
+  ctf-ast:
+    container_name: ast
+    build:
+      context: ./python_chals
+      dockerfile: ./anti-spirit_team/anti-spirit_team.dockerfile
+    restart: unless-stopped
+    ports: # TODO: remove this in prod mode
+      - "10008:8080"
+    deploy:
+      resources:
+        limits:
+          memory: 200M
+          cpus: "2"
