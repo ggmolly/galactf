@@ -93,8 +93,11 @@ export default function ChallengeModal({ challenge, open, onClose }: ChallengeMo
   };
 
   useEffect(() => {
-    fetchChallengeSolvers(challenge.id);
-  }, [challenge]);
+    if (open) {
+      setSolvers(undefined);
+      fetchChallengeSolvers(challenge.id);
+    }
+  }, [challenge.id, open]);
 
   return (
     <Dialog open={open} onOpenChange={onClose}>

@@ -8,4 +8,6 @@ const (
 	LeaderboardCacheKey = "lbd"
 	LeaderboardCacheTTL = time.Hour * 6
 	GalaUserCacheTTL    = time.Hour * 24
+	SolversCacheKey     = "sol%d"
+	SolversCacheTTL     = time.Hour * 1
 )

@@ -1,6 +1,7 @@
 package orm
 
 import (
+	"fmt"
 	"math/rand/v2"
 	"strings"
 
@@ -44,14 +45,21 @@ func GetAllSolvedAttempts() ([]Attempt, error) {
 }
 
 func GetSolvedAttempts(challengeId int) ([]Attempt, error) {
+	cachedSolvers, err := readCachedSolvers(uint64(challengeId))
+	if err == nil {
+		return *cachedSolvers, nil
+	}
+
 	var attempts []Attempt
-	err := GormDB.
+	err = GormDB.
 		Preload("User").
 		Where("challenge_id = ? AND success = true", challengeId).
 		Find(&attempts).Error
 	if err != nil {
 		return nil, err
 	}
+
+	cache.WriteInterface(fmt.Sprintf(cache.SolversCacheKey, uint64(challengeId)), attempts, cache.SolversCacheTTL)
 	return attempts, nil
 }
 
@@ -123,6 +131,14 @@ func readCachedLeaderboard() (*[]Attempt, error) {
 	return cache.ReadCached[[]Attempt](cache.LeaderboardCacheKey)
 }
 
+func readCachedSolvers(chalId uint64) (*[]Attempt, error) {
+	return cache.ReadCached[[]Attempt](fmt.Sprintf(cache.SolversCacheKey, chalId))
+}
+
 func InvalidateLeaderboardCache() {
 	cache.InvalidateKey(cache.LeaderboardCacheKey)
+}
+
+func InvalidateChallengeSolversCache(chalId uint64) {
+	cache.InvalidateKey(fmt.Sprintf(cache.SolversCacheKey, chalId))
 }

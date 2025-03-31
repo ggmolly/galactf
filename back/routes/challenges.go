@@ -95,6 +95,7 @@ func SubmitFlag(c *fiber.Ctx) error {
 		return utils.RestStatusFactory(c, fiber.StatusInternalServerError, "Failed to submit flag")
 	} else if isValid {
 		orm.InvalidateLeaderboardCache()
+		orm.InvalidateChallengeSolversCache(chal.ID)
 	}
 
 	var firstBlood bool
