@@ -30,7 +30,6 @@ func GetChallenges(c *fiber.Ctx) error {
 		status = fiber.StatusInternalServerError
 	}
 
-	cache.WriteInterface(fmt.Sprintf(cache.ChallengesCacheKey, user.ID), chals, cache.ChallengesCacheTTL)
 	return utils.RestStatusFactoryData(c, status, chals, "")
 }
 
@@ -94,7 +93,7 @@ func SubmitFlag(c *fiber.Ctx) error {
 	}
 	if err := orm.GormDB.Create(attempt).Error; err != nil {
 		return utils.RestStatusFactory(c, fiber.StatusInternalServerError, "Failed to submit flag")
-	} else {
+	} else if isValid {
 		orm.InvalidateLeaderboardCache()
 	}
 
