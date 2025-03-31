@@ -13,7 +13,7 @@ import (
 )
 
 var (
-    loc, _ = time.LoadLocation("Europe/Paris")
+	loc, _     = time.LoadLocation("Europe/Paris")
 	eventStart = time.Date(2025, time.April, 1, 13, 0, 0, 0, loc)
 )
 

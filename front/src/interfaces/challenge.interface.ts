@@ -8,6 +8,7 @@ export interface Challenge {
   categories: string[];
   attachments: Attachment[];
   reveal_in?: number;
+  reveal_at?: Date;
 }
 
 export interface ChallengeWithSolveRate extends Challenge {
