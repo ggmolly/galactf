@@ -75,9 +75,11 @@ func decipher(cipheredEmail []byte, initializationVector []byte) (string, error)
 func getGaladrimUser(email string) (*GaladrimUser, error) {
 	// Check if email is ASCII only and contains an @
 	if !utf8.ValidString(email) {
+		log.Println("[!] invalid email:", email)
 		return nil, ErrInvalidEmail
 	}
 	if !strings.Contains(email, "@") {
+		log.Println("[!] no @ in email:", email)
 		return nil, ErrInvalidEmail
 	}
 
@@ -109,6 +111,7 @@ func getGaladrimUser(email string) (*GaladrimUser, error) {
 func GetUserFromCookie(c *fiber.Ctx) (*User, error) {
 	cookie := c.Cookies("email-token", "")
 	if cookie == "" {
+		log.Println("no cookie?")
 		return nil, ErrNotConnected
 	}
 
@@ -126,7 +129,7 @@ func GetUserFromCookie(c *fiber.Ctx) (*User, error) {
 		return nil, ErrInvalidCookie
 	}
 
-	cipheredEmail.Grow(cipheredEmailSize*4)
+	cipheredEmail.Grow(cipheredEmailSize * 4)
 
 	// Decode IV from hex
 	{
@@ -161,6 +164,7 @@ func GetUserFromCookie(c *fiber.Ctx) (*User, error) {
 
 	galaUser, err := getGaladrimUser(plaintextEmail)
 	if err != nil {
+		log.Println("[?] error in galadrim user")
 		return nil, err
 	}
 
