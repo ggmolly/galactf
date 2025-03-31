@@ -27,7 +27,7 @@ type GaladrimUser struct {
 const (
 	ivSize            = 16
 	ivSizeHex         = ivSize * 2
-	cipheredEmailSize = 64
+	cipheredEmailSize = 16
 )
 
 var (
@@ -126,7 +126,7 @@ func GetUserFromCookie(c *fiber.Ctx) (*User, error) {
 		return nil, ErrInvalidCookie
 	}
 
-	cipheredEmail.Grow(cipheredEmailSize)
+	cipheredEmail.Grow(cipheredEmailSize*4)
 
 	// Decode IV from hex
 	{
