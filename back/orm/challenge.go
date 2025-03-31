@@ -46,6 +46,7 @@ func GetChallengeStats(userID uint64) ([]ChallengeStats, error) {
 		Table("challenges").
 		Preload("Attempts").
 		Preload("Attachments").
+        Order("reveal_at ASC").
 		Find(&challenges).
 		Error
 	if err != nil {
