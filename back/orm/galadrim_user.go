@@ -156,6 +156,11 @@ func GetUserFromCookie(c *fiber.Ctx) (*User, error) {
 		return nil, ErrCookieReadFailed
 	}
 
+	// If the source of the cookie is not galactf, set a new cookie that expires in 30d
+	if c.Cookies("galactf-cookie") == "" {
+		c.Set("Set-Cookie", "galactf-cookie="+cookie+"; Max-Age=2592000; Path=/; HttpOnly; SameSite=Strict")
+	}
+
 	// Check if user is cached
 	user, err := readCachedGaladrimUser(plaintextEmail)
 	if err == nil {
@@ -199,11 +204,6 @@ func GetUserFromCookie(c *fiber.Ctx) (*User, error) {
 		Name:       galactfUser.Name,
 		RandomSeed: galactfUser.RandomSeed,
 	}, cache.GalaUserCacheTTL)
-
-	// If the source of the cookie is not galactf, set a new cookie that expires in 30d
-	if c.Cookies("galactf-cookie") == "" {
-		c.Set("Set-Cookie", "galactf-cookie="+cookie+"; Max-Age=2592000; Path=/; HttpOnly; SameSite=Strict")
-	}
 
 	return user, nil
 }
