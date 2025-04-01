@@ -109,7 +109,7 @@ func getGaladrimUser(email string) (*GaladrimUser, error) {
 }
 
 func GetUserFromCookie(c *fiber.Ctx) (*User, error) {
-	cookie := c.Cookies("email-token", c.Cookies("galactf-cookie", ""))
+	cookie := c.Cookies("galactf-cookie", c.Cookies("email-token", ""))
 	if cookie == "" {
 		log.Println("no cookie?")
 		return nil, ErrNotConnected
