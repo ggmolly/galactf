@@ -27,8 +27,6 @@ import { Attempt } from "@/interfaces/attempt.interface";
 import { formatBytes } from "@/utils/formatBytes";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/providers/auth.provider";
-import { WS_CHALLENGE_ATTEMPT } from "@/proto/handlers";
-import { useWs } from "@/providers/ws.provider";
 
 const flagRegex = /^GALA{[A-Za-z0-9_-]{24,48}}$/;
 export interface ChallengeModalProps {
@@ -43,7 +41,6 @@ export default function ChallengeModal({ challenge, open, onClose }: ChallengeMo
   const [submitting, setSubmitting] = useState<boolean>(false);
 
   const { user } = useAuth();
-  const { addUserHandler, removeUserHandler } = useWs();
 
   const fetchChallengeSolvers = (id: number) => {
     apiClient
@@ -100,21 +97,6 @@ export default function ChallengeModal({ challenge, open, onClose }: ChallengeMo
       setSolvers(undefined);
       fetchChallengeSolvers(challenge.id);
     }
-  }, [challenge.id, open]);
-
-  useEffect(() => {
-    if (open) {
-      addUserHandler(WS_CHALLENGE_ATTEMPT, () => {
-        fetchChallengeSolvers(challenge.id);
-      });
-    }
-    return () => {
-      if (!open) {
-        removeUserHandler(WS_CHALLENGE_ATTEMPT, () => {
-          fetchChallengeSolvers(challenge.id);
-        });
-      }
-    };
   }, [challenge.id, open]);
 
   return (

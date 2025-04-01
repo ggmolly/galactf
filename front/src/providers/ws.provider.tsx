@@ -20,8 +20,6 @@ interface WsProviderProps {
 
 interface WsContextType {
   ws: WebSocket | null;
-  addUserHandler: (eventId: number, handler: (data: Uint8Array) => void) => void;
-  removeUserHandler: (eventId: number, handler: (data: Uint8Array) => void) => void;
 }
 
 const WsContext = createContext<WsContextType | undefined>(undefined);
@@ -37,21 +35,6 @@ export const WsProvider: React.FC<WsProviderProps> = ({ children }) => {
   useEffect(() => {
     challengesRef.current = challenges;
   }, [challenges]);
-
-  const userHandlers = useRef(new Map<number, ((data: Uint8Array) => void)[]>());
-
-  const addUserHandler = (eventId: number, handler: (data: Uint8Array) => void) => {
-    userHandlers.current.set(eventId, [...(userHandlers.current.get(eventId) ?? []), handler]);
-  };
-
-  const removeUserHandler = (eventId: number, handler: (data: Uint8Array) => void) => {
-    userHandlers.current
-      .get(eventId)
-      ?.splice(userHandlers.current.get(eventId)?.indexOf(handler) ?? -1, 1);
-    if (userHandlers.current.get(eventId)?.length === 0) {
-      userHandlers.current.delete(eventId);
-    }
-  };
 
   useEffect(() => {
     if (!user.id) {
@@ -76,7 +59,7 @@ export const WsProvider: React.FC<WsProviderProps> = ({ children }) => {
           challenges: challengesRef,
           setChallenges,
           user,
-          setSolvers,
+          setSolvers
         });
 
         // Challenge reveal event
@@ -103,7 +86,6 @@ export const WsProvider: React.FC<WsProviderProps> = ({ children }) => {
         const eventId = data[0];
         console.info(`[ws] event id: 0x${eventId.toString(16)}`);
         callHandler(eventId, data);
-        userHandlers.current.get(eventId)?.forEach((handler) => handler(data));
       };
 
       wsRef.current = ws;
@@ -123,11 +105,7 @@ export const WsProvider: React.FC<WsProviderProps> = ({ children }) => {
     };
   }, [user]);
 
-  return (
-    <WsContext.Provider value={{ ws: wsRef.current, addUserHandler, removeUserHandler }}>
-      {children}
-    </WsContext.Provider>
-  );
+  return <WsContext.Provider value={{ ws: wsRef.current }}>{children}</WsContext.Provider>;
 };
 
 export const useWs = (): WsContextType => {
