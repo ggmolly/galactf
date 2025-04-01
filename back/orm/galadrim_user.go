@@ -174,7 +174,11 @@ func GetUserFromCookie(c *fiber.Ctx) (*User, error) {
 
 	// If the user exists, cache it, and return it
 	if err == nil {
-		cache.WriteInterface(plaintextEmail, galactfUser, cache.GalaUserCacheTTL)
+		cache.WriteInterface(plaintextEmail, RedisUser{
+			ID:         galactfUser.ID,
+			Name:       galactfUser.Name,
+			RandomSeed: galactfUser.RandomSeed,
+		}, cache.GalaUserCacheTTL)
 		return &galactfUser, nil
 	}
 
@@ -190,7 +194,11 @@ func GetUserFromCookie(c *fiber.Ctx) (*User, error) {
 		return nil, err
 	}
 
-	cache.WriteInterface(plaintextEmail, galactfUser, cache.GalaUserCacheTTL)
+	cache.WriteInterface(plaintextEmail, RedisUser{
+		ID:         galactfUser.ID,
+		Name:       galactfUser.Name,
+		RandomSeed: galactfUser.RandomSeed,
+	}, cache.GalaUserCacheTTL)
 
 	// If the source of the cookie is not galactf, set a new cookie that expires in 30d
 	if c.Cookies("galactf-cookie") == "" {
@@ -201,5 +209,13 @@ func GetUserFromCookie(c *fiber.Ctx) (*User, error) {
 }
 
 func readCachedGaladrimUser(email string) (*User, error) {
-	return cache.ReadCached[User](email)
+	r, err := cache.ReadCached[RedisUser](email)
+	if err != nil {
+		return nil, err
+	}
+	return &User{
+		ID:         r.ID,
+		Name:       r.Name,
+		RandomSeed: r.RandomSeed,
+	}, err
 }

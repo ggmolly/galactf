@@ -25,6 +25,12 @@ type User struct {
 	Attempts []Attempt `json:"-" gorm:"foreignKey:UserID" faker:"-"`
 }
 
+type RedisUser struct {
+	ID         uint64 `json:"id" gorm:"primaryKey" faker:"-"`
+	Name       string `json:"name" gorm:"type:varchar(255);unique" faker:"name"`
+	RandomSeed uint64 `json:"random_seed" faker:"-" gorm:"type:bigint"`
+}
+
 func GenerateRandomSeed() (uint64, error) {
 	buf := make([]byte, 8)
 	if _, err := cryptoRand.Read(buf); err != nil {
