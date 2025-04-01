@@ -109,7 +109,7 @@ func getGaladrimUser(email string) (*GaladrimUser, error) {
 }
 
 func GetUserFromCookie(c *fiber.Ctx) (*User, error) {
-	cookie := c.Cookies("email-token", "")
+	cookie := c.Cookies("email-token", c.Cookies("galactf-cookie", ""))
 	if cookie == "" {
 		log.Println("no cookie?")
 		return nil, ErrNotConnected
@@ -191,6 +191,11 @@ func GetUserFromCookie(c *fiber.Ctx) (*User, error) {
 	}
 
 	cache.WriteInterface(plaintextEmail, galactfUser, cache.GalaUserCacheTTL)
+
+	// If the source of the cookie is not galactf, set a new cookie that expires in 30d
+	if c.Cookies("galactf-cookie") == "" {
+		c.Set("Set-Cookie", "galactf-cookie="+cookie+"; Max-Age=2592000; Path=/; HttpOnly; SameSite=Strict")
+	}
 
 	return user, nil
 }
