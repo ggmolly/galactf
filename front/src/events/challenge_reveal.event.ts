@@ -20,10 +20,12 @@ export function handleChalReveal(
         name: event.name,
         difficulty: event.difficulty,
         categories: event.categories,
-        attachments: event.attachments.map((attachment) => ({
-          ...attachment,
-          type: attachment.type as "url" | "file",
-        })),
+        attachments: event.attachments
+          .filter((attachment) => attachment.filename.trim() !== "")
+          .map((attachment) => ({
+            ...attachment,
+            type: attachment.type as "url" | "file",
+          })),
         solve_rate: 0,
         solved: false,
         solvers: 0,
