@@ -21,7 +21,7 @@ export function DifficultyBadge({ difficulty }: DifficultyBadgeProps) {
   return (
     <TooltipProvider>
       <Tooltip>
-        <TooltipTrigger>
+        <TooltipTrigger tabIndex={-1}>
           <Badge className={cn("text-xs font-bold my-auto", difficultyColor(difficulty))}>
             {difficulty}/5
           </Badge>
