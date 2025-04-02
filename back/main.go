@@ -55,6 +55,11 @@ func main() {
 		JSONDecoder: sonic.Unmarshal,
 	})
 
+	app.Use(func(c *fiber.Ctx) error {
+		c.Locals("name", "anonymous")
+		return c.Next()
+	})
+
 	app.Use(cors.New(cors.Config{
 		AllowMethods: "GET,POST,PUT,DELETE,PATCH,OPTIONS",
 		AllowOriginsFunc: func(origin string) bool {
@@ -64,7 +69,7 @@ func main() {
 	}))
 
 	app.Use(logger.New(logger.Config{
-		Format:        "[${time}] [${ip}] [${method}] [${status}] @ ${path} | ${latency}\n",
+		Format:        "[${time}] [${ip} / ${locals:name}] [${method}] [${status}] @ ${path} | ${latency}\n",
 		TimeZone:      "UTC",
 		DisableColors: true,
 	}))

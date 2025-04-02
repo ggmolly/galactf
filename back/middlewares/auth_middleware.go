@@ -15,6 +15,10 @@ func DummyAuthMiddleware(c *fiber.Ctx) error {
 		return utils.RestStatusFactory(c, fiber.StatusUnauthorized, "failed to authenticate user")
 	}
 	c.Locals("user", &user)
+	c.Locals("name", user.Name)
+	if c.Locals("name") == nil || c.Locals("name") == "" {
+		c.Locals("name", "anonymous")
+	}
 	return c.Next()
 }
 
@@ -24,6 +28,10 @@ func GaladrimAuthMiddleware(c *fiber.Ctx) error {
 		return utils.RestStatusFactory(c, fiber.StatusUnauthorized, "failed to authenticate user")
 	}
 	c.Locals("user", user)
+	c.Locals("name", user.Name)
+	if c.Locals("name") == nil || c.Locals("name") == "" {
+		c.Locals("name", "anonymous")
+	}
 	return c.Next()
 }
 
