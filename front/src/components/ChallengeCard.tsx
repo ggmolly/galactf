@@ -56,7 +56,7 @@ export function ChallengeCard({ challenge, selectChallenge }: ChallengeCardProps
     </Card>
   );
 }
-h
+
 interface ChallengeCardLockedProps {
   revealAt: Date;
   difficulty: number;
