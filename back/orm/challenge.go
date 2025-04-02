@@ -84,7 +84,6 @@ func GetChallengeStats(userID uint64) ([]ChallengeStats, error) {
 			// Censor other informations
 			challenge.Name = ""
 			challenge.Description = ""
-			challenge.Difficulty = 0
 			challenge.Categories = []string{}
 			challenge.Attachments = []Attachment{}
 			challenge.Attempts = []Attempt{}

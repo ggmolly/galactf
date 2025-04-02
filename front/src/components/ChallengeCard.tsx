@@ -16,7 +16,7 @@ interface ChallengeCardProps {
 
 export function ChallengeCard({ challenge, selectChallenge }: ChallengeCardProps) {
   if (!!challenge.reveal_at) {
-    return <ChallengeCardLocked revealAt={challenge.reveal_at} />;
+    return <ChallengeCardLocked revealAt={challenge.reveal_at} difficulty={challenge.difficulty} />;
   }
 
   return (
@@ -56,12 +56,13 @@ export function ChallengeCard({ challenge, selectChallenge }: ChallengeCardProps
     </Card>
   );
 }
-
+h
 interface ChallengeCardLockedProps {
   revealAt: Date;
+  difficulty: number;
 }
 
-export function ChallengeCardLocked({ revealAt }: ChallengeCardLockedProps) {
+export function ChallengeCardLocked({ revealAt, difficulty }: ChallengeCardLockedProps) {
   const computeRemainingSeconds = () => {
     return (Math.floor((revealAt.getTime() - Date.now()) / 1000) | 0) + 1;
   };
@@ -91,14 +92,16 @@ export function ChallengeCardLocked({ revealAt }: ChallengeCardLockedProps) {
               <LockIcon className="w-4 h-4 text-primary" />
               <span className="text-primary">Locked</span>
             </div>
-            <span className="text-xs text-secondary">{durationFormat(secondsRemaining)} left</span>
+            <DifficultyBadge difficulty={difficulty} />
           </div>
         </CardTitle>
       </CardHeader>
       <CardContent>
         <div className="flex flex-col gap-2">
           <span className="text-lg font-bold text-muted-foreground">{computePoints(0)} points</span>
-          <span className="text-xs text-muted-foreground">Not available yet</span>
+          <span className="text-xs text-secondary font-bold">
+            {durationFormat(secondsRemaining)} left
+          </span>
         </div>
 
         <hr className="my-2" />
