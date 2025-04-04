@@ -3,6 +3,7 @@ package routes
 import (
 	"fmt"
 	"log"
+	"math/rand"
 	"time"
 
 	"github.com/ggmolly/galactf/cache"
@@ -42,6 +43,10 @@ func GetChallenge(c *fiber.Ctx) error {
 	chal, err := orm.GetChallengeStatsById(id, user.ID)
 	if err != nil {
 		return utils.RestStatusFactory(c, fiber.StatusInternalServerError, "error fetching challenge")
+	}
+	if chal.RevealAt.After(time.Now()) {
+		time.Sleep(time.Duration(rand.Intn(1000)) * time.Millisecond)
+		return utils.RestStatusFactory(c, fiber.StatusForbidden, "challenge is locked (arthur on te voit :t)")
 	}
 	return utils.RestStatusFactoryData(c, fiber.StatusOK, chal, "")
 }
