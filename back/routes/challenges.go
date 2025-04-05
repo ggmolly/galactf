@@ -129,7 +129,7 @@ func SubmitFlag(c *fiber.Ctx) error {
 
 	// serialize the user name if their attempt is a first blood so the client
 	// can display a toast message
-	if firstBlood {
+	if firstBlood && isValid {
 		orm.SendFirstBlood(chal, user)
 	}
 
