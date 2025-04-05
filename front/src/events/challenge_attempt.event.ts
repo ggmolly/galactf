@@ -44,7 +44,7 @@ export function handleChalAttempt(
       }}]);
   }
 
-  if (event.firstBlood && event.user!.id !== user.id) {
+  if (event.firstBlood && event.success && event.user!.id !== user.id) {
     const chal = challenges.current.find((c) => c.id === event.challengeId);
     toast.info(`${event.user!.name} got the first blood on ${chal?.name}!`, {
       duration: 60000,
