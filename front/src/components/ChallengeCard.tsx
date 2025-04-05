@@ -19,8 +19,6 @@ export function ChallengeCard({ challenge, selectChallenge }: ChallengeCardProps
     return <ChallengeCardLocked revealAt={challenge.reveal_at} difficulty={challenge.difficulty} />;
   }
 
-  console.log({ isBonus: challenge.categories.includes("bonus")})
-
   return (
     <Card
       className={cn(

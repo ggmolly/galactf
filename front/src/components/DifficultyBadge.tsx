@@ -20,7 +20,6 @@ const diffMap: Record<number, string> = {
 const BONUS_DIFFICULTY = 255;
 
 export function DifficultyBadge({ difficulty }: DifficultyBadgeProps) {
-    console.log({ difficulty })
     if (difficulty === BONUS_DIFFICULTY) {
         return <Badge className={cn("text-xs font-bold my-auto", difficultyColor(difficulty))}>Bonus</Badge>
     }
