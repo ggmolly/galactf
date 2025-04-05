@@ -160,3 +160,33 @@ a:active {
 a:visited {
   @apply text-purple-400;
 }
+
+.border-rainbow {
+    --angle: 0deg;
+    border: 1px solid;
+    border-radius: 4px;
+    border-image: conic-gradient(
+        from var(--angle),
+        #ff00ff, /* Magenta */
+        #ff0080, /* Neon Pink */
+        #ffbf00, /* Neon Orange-Yellow */
+        #00ffff, /* Cyan */
+        #8a2be2, /* Neon Purple */
+        #ff00ff /* Magenta (Loop) */
+    ) 1;
+    animation: 3s rotate linear infinite;
+    /* For glow effect around the box */
+    box-shadow: 0 0 3px #ff00ff, 0 0 6px #ff00ff, 0 0 9px #00ffff;
+}
+
+@keyframes rotate {
+    to {
+        --angle: 360deg;
+    }
+}
+
+@property --angle {
+    syntax: '<angle>';
+    initial-value: 0deg;
+    inherits: false;
+}
