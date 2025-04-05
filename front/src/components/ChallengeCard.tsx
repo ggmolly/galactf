@@ -19,11 +19,16 @@ export function ChallengeCard({ challenge, selectChallenge }: ChallengeCardProps
     return <ChallengeCardLocked revealAt={challenge.reveal_at} difficulty={challenge.difficulty} />;
   }
 
+  console.log({ isBonus: challenge.categories.includes("bonus")})
+
   return (
     <Card
       className={cn(
         "w-72 hover:scale-105 transition-all duration-150 cursor-pointer",
-        challenge.solved ? "border-secondary" : null
+        {
+            "border-secondary": challenge.solved,
+            "border-rainbow": challenge.categories.includes("bonus") && !challenge.solved 
+        }
       )}
       onClick={() => {
         selectChallenge(challenge);
