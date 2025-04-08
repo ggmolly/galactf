@@ -31,7 +31,7 @@ var (
 		3: utils.RandomVideo,
 	}
 	fileSizeMin = 1024
-	fileSizeMax = 2*1024*1024 // 2 MB
+	fileSizeMax = 12*1024 // 24 kB
 	maxSize = int64(30*1024*1024) // 30 MB
 	mutex = &sync.Mutex{}
 )
