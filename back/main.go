@@ -15,7 +15,6 @@ import (
 	"github.com/ggmolly/galactf/orm"
 	"github.com/ggmolly/galactf/routes"
 	"github.com/ggmolly/galactf/types"
-	"github.com/ggmolly/galactf/utils"
 	"github.com/gofiber/contrib/websocket"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
@@ -39,7 +38,6 @@ func init() {
 
 	orm.InitDatabase()
 	cache.InitRedisClient()
-	utils.InitRedisStore()
 	go routes.RevealAgent()
 
 	if len(os.Args) > 1 && os.Args[1] == "seed" {
