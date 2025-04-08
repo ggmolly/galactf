@@ -134,14 +134,18 @@ func GenerateByteBounty(c *fiber.Ctx) error {
 		}
 	}
 
+	
+	c.Set("Content-Disposition", "attachment; filename=hdd_dump.img")
+	err := c.SendFile(outputImage)
 	// Unmount image & clean up
 	if err := clean(mountPath, outputImage); err != nil {
 		log.Println("[byte_bounty] failed to clean file:", err)
 		return utils.RestStatusFactory(c, fiber.StatusInternalServerError, "failed to generate image")
 	}
-	defer os.Remove(outputImage)
-
-	c.Set("Content-Disposition", "attachment; filename=hdd_dump.img")
-	return c.SendFile(outputImage)
+	if err != nil {
+		return utils.RestStatusFactory(c, fiber.StatusInternalServerError, "failed to generate image")
+	} else {
+		return nil
+	}
 }
 
