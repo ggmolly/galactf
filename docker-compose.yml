@@ -13,6 +13,13 @@ services:
     restart: unless-stopped
     ports:
       - "6379:6379"
+  galactf-backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - "7777:7777"
   ctf-bobby-library:
     container_name: bobby_library
     build:
