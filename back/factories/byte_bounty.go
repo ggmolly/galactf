@@ -40,8 +40,14 @@ func unmount(mountPath string) error {
 	return exec.Command("umount", mountPath).Run()
 }
 
-func clean(mountPath string) error {
-	return exec.Command("rm", "-rf", mountPath).Run()
+func clean(mountPath, imagePath string) error {
+	if err := exec.Command("umount", mountPath).Run(); err != nil {
+		return err
+	}
+	if err := os.Remove(imagePath); err != nil {
+		return err
+	}
+	return os.RemoveAll(mountPath)
 }
 
 func GenerateByteBounty(c *fiber.Ctx) error {
@@ -104,6 +110,7 @@ func GenerateByteBounty(c *fiber.Ctx) error {
 			if err != nil {
 				fakeFile.Close()
 				log.Println("[byte_bounty] failed to write file:", err)
+				clean(mountPath, outputImage)
 				return utils.RestStatusFactory(c, fiber.StatusInternalServerError, "failed to generate image")
 			}
 		} else {
@@ -112,6 +119,7 @@ func GenerateByteBounty(c *fiber.Ctx) error {
 			if _, err := fakeFile.WriteString(flag); err != nil {
 				fakeFile.Close()
 				log.Println("[byte_bounty] failed to write file:", err)
+				clean(mountPath, outputImage)
 				return utils.RestStatusFactory(c, fiber.StatusInternalServerError, "failed to generate image")
 			} else {
 				io.CopyN(fakeFile, chachaReader, randomSize/4+1)
@@ -121,13 +129,14 @@ func GenerateByteBounty(c *fiber.Ctx) error {
 		// Gzip the file inline
 		if err := exec.Command("gzip", filepath.Join(mountPath, dirs[dir], fileName)).Run(); err != nil {
 			log.Println("[byte_bounty] failed to gzip file:", err)
+			clean(mountPath, outputImage)
 			return utils.RestStatusFactory(c, fiber.StatusInternalServerError, "failed to generate image")
 		}
 	}
 
-	// Unmount image
-	if err := unmount(mountPath); err != nil {
-		log.Println("[byte_bounty] failed to unmount file:", err)
+	// Unmount image & clean up
+	if err := clean(mountPath, outputImage); err != nil {
+		log.Println("[byte_bounty] failed to clean file:", err)
 		return utils.RestStatusFactory(c, fiber.StatusInternalServerError, "failed to generate image")
 	}
 	defer os.Remove(outputImage)
