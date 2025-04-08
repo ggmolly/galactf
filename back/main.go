@@ -6,6 +6,7 @@ import (
 	"os"
 	"runtime"
 	"strings"
+	"time"
 
 	"github.com/bytedance/sonic"
 	"github.com/ggmolly/galactf/cache"
@@ -14,6 +15,7 @@ import (
 	"github.com/ggmolly/galactf/orm"
 	"github.com/ggmolly/galactf/routes"
 	"github.com/ggmolly/galactf/types"
+	"github.com/ggmolly/galactf/utils"
 	"github.com/gofiber/contrib/websocket"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
@@ -37,6 +39,7 @@ func init() {
 
 	orm.InitDatabase()
 	cache.InitRedisClient()
+	utils.InitRedisStore()
 	go routes.RevealAgent()
 
 	if len(os.Args) > 1 && os.Args[1] == "seed" {
@@ -53,6 +56,7 @@ func main() {
 		Views:       engine,
 		JSONEncoder: sonic.Marshal,
 		JSONDecoder: sonic.Unmarshal,
+		ProxyHeader: "X-Forwarded-For",
 	})
 
 	app.Use(func(c *fiber.Ctx) error {
@@ -172,6 +176,11 @@ func main() {
 			factoriesGroup.Get("/more_or_less", middlewares.ChallengeUnlockedMiddleware("more or less"), factories.GenerateMoreOrLess)
 			factoriesGroup.Get("/cat_image", middlewares.ChallengeUnlockedMiddleware("cat image"), factories.GenerateCatImage)
 			factoriesGroup.Get("/quiet_riot_code", middlewares.ChallengeUnlockedMiddleware("quiet riot code"), factories.GenerateQuietRiotCode)
+			factoriesGroup.Get("/byte_bounty",
+				middlewares.ChallengeUnlockedMiddleware("byte bounty"),
+				middlewares.NewRateLimiterMiddleware(1, 30*time.Minute, "HTTP 429: 30 minutes are required between two calls to this endpoint."),
+				factories.GenerateByteBounty,
+			)
 
 			// "Exclusive club" challenge
 			oneTrickGroup := factoriesGroup.Group("/exclusive_club")
@@ -198,5 +207,5 @@ func main() {
 		}
 	}
 
-	app.Listen(":7777")
+	app.Listen("0.0.0.0:7777")
 }
