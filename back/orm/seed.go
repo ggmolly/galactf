@@ -127,7 +127,7 @@ func seedRealChallenges() {
 		},
 		{
 			Name:        "bobby's library",
-			Difficulty:  1,
+			Difficulty:  2,
 			Categories:  []string{"web", "pwn"},
 			Description: "Bobby made an online book library using sqlite! Check it out!",
 			Attachments: []Attachment{
@@ -251,6 +251,20 @@ func seedRealChallenges() {
 				},
 			},
 		},
+		{
+			Name:        "byte bounty",
+			Difficulty:  2,
+			Categories:  []string{"forensic", "unix"},
+			Description: "Use your sleuthing skills to uncover the hidden gem within the data. (be wise, file endpoint is rate-limited to 1 call every 30 minutes)",
+			Attachments: []Attachment{
+				{
+					Type:  "file",
+					Title: "hdd_dump.img",
+					Size:  50*1024*1024,
+					URL:   "/factories/byte_bounty",
+				},
+			},
+		},
 	}
 
 	// Sort by difficulty ascending
@@ -275,6 +289,15 @@ func seedRealChallenges() {
 		if challenges[i].RevealAt.Day() == 21 {
 			challenges[i].RevealAt = challenges[i].RevealAt.Add(time.Hour * 24)
 			daysOffset += 1
+		}
+
+		// Check if the project doesn't already exist (by its name)
+		{
+			var n int64
+			GormDB.Model(&Challenge{}).Where("name = ?", challenges[i].Name).Count(&n)
+			if n > 0 {
+				continue
+			}
 		}
 		GormDB.Create(&challenges[i])
 	}

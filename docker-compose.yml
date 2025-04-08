@@ -1,6 +1,7 @@
 services:
   galactf-db:
     image: postgres:17.4-alpine
+    container_name: galactf-db
     restart: unless-stopped
     environment:
       POSTGRES_USER: galactf
@@ -10,9 +11,19 @@ services:
       - "5432:5432"
   galactf-redis:
     image: redis:7.4-alpine
+    container_name: galactf-redis
     restart: unless-stopped
     ports:
       - "6379:6379"
+  galactf-backend:
+    container_name: galactf-backend
+    build:
+      context: ./back
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    privileged: true # <-- used to mount exfat fs
+    ports:
+      - "7777:7777"
   ctf-bobby-library:
     container_name: bobby_library
     build:
