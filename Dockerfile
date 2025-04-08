@@ -14,7 +14,7 @@ RUN go build -o main .
 FROM alpine:3.19
 
 RUN apk add --no-cache \
-    libc-compat \
+    libc6-compat \
     exfat-utils \
     fuse-exfat
 
