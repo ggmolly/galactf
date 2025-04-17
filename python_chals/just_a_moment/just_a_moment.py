@@ -1,5 +1,6 @@
 import random
 import hashlib
+import time
 from threading import Lock
 from starlette.applications import Starlette
 from starlette.responses import JSONResponse, HTMLResponse
@@ -95,6 +96,7 @@ async def get_flag_x(request: Request):
 @app.route("/verify", methods=["POST"])
 @limiter.limit(limit_value="5/minute")
 async def verify(request: Request):
+    time.sleep(random.randint(1, 5))
     data = await request.json()
     with FLAG_CHALS_LOCK:
         if request.state.user_id not in FLAG_CHALS:
